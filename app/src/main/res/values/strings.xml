@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">ServantAndroid</string>
+    <string name="app_name">Servant</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Mein Servername</string>
+    <string name="nav_header_subtitle">IP: 2001:0db8:85a3:08d3::0370:7344</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 </resources>

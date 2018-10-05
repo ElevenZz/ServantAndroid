@@ -12,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,18 +82,30 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        TextView text = findViewById(R.id.text_view);
+        text.setText(item.getTitle());
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_server_01) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_server_02) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_server_03) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_linux_gameserver) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_windows_gameserver) {
+
+        } else if (id == R.id.nav_webspace) {
+
+        } else if (id == R.id.nav_apache2) {
+
+        } else if (id == R.id.nav_email) {
+
+        } else if (id == R.id.nav_security) {
+
+        } else if (id == R.id.nav_statistic) {
+
+        } else if (id == R.id.nav_voiceserver) {
 
         }
 

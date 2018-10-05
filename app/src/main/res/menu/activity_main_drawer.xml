@@ -1,37 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/nav_server_01"
+            android:icon="@drawable/ic_storage_black_24dp"
+            android:title="Mein Servername" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/nav_server_02"
+            android:icon="@drawable/ic_storage_black_24dp"
+            android:title="Game Server" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_server_03"
+            android:icon="@drawable/ic_storage_black_24dp"
+            android:title="Webspace" />
     </group>
 
-    <item android:title="Communicate">
+    <item
+        android:checkable="true"
+        android:title="Modules">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_linux_gameserver"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="Linux Gameserver" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_windows_gameserver"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="Windows Gameserver" />
+            <item
+                android:id="@+id/nav_webspace"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="Webspace" />
+            <item
+                android:id="@+id/nav_apache2"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="Apache2" />
+            <item
+                android:id="@+id/nav_email"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="eMail" />
+            <item
+                android:id="@+id/nav_security"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="Security" />
+            <item
+                android:id="@+id/nav_statistic"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="Statistic" />
+            <item
+                android:id="@+id/nav_voiceserver"
+                android:checkable="true"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="Voiceserver" />
         </menu>
     </item>
 
