@@ -19,38 +19,48 @@
             android:title="Webspace" />
     </group>
 
-    <item android:title="Modules">
+    <item
+        android:checkable="true"
+        android:title="Modules">
         <menu>
             <item
                 android:id="@+id/nav_linux_gameserver"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="Linux Gameserver" />
             <item
                 android:id="@+id/nav_windows_gameserver"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="Windows Gameserver" />
             <item
                 android:id="@+id/nav_webspace"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="Webspace" />
             <item
                 android:id="@+id/nav_apache2"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="Apache2" />
             <item
                 android:id="@+id/nav_email"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="eMail" />
             <item
                 android:id="@+id/nav_security"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="Security" />
             <item
                 android:id="@+id/nav_statistic"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="Statistic" />
             <item
                 android:id="@+id/nav_voiceserver"
+                android:checkable="true"
                 android:icon="@drawable/ic_apps_black_24dp"
                 android:title="Voiceserver" />
         </menu>
