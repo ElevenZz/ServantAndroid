@@ -3,35 +3,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
-
-    <item android:title="Communicate">
+    <item android:title="Servers">
+        <menu
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_server_01"
+                    android:icon="@drawable/ic_storage_black_24dp"
+                    android:title="Mein Server" />
+                <item
+                    android:id="@+id/nav_server_02"
+                    android:icon="@drawable/ic_storage_black_24dp"
+                    android:title="WebSpace" />
+                <item
+                    android:id="@+id/nav_server_03"
+                    android:icon="@drawable/ic_storage_black_24dp"
+                    android:title="Gameserver" />
+                <item
+                    android:id="@+id/nav_server_04"
+                    android:icon="@drawable/ic_storage_black_24dp"
+                    android:title="NAS" />
+                <item
+                    android:id="@+id/nav_serveradd"
+                    android:icon="@drawable/ic_add_circle_black_24dp"
+                    android:title="Server Hinzufügen" />
+            </group>
+        </menu>
+    </item>
+    <item android:title="Modules">
         <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_module_01"
+                    android:icon="@drawable/ic_dashboard_black_24dp"
+                    android:title="Test Module" />
+                <item
+                    android:id="@+id/nav_module_02"
+                    android:icon="@drawable/ic_dashboard_black_24dp"
+                    android:title="Test Module2" />
+            </group>
         </menu>
     </item>
 
