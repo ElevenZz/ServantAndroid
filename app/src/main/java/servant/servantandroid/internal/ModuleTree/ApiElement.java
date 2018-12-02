@@ -13,9 +13,9 @@ import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.Logger;
 
 public abstract class ApiElement<ChildType> {
-    private String m_fullname;
-    private String m_name;
-    private String m_id;
+    String m_fullname;
+    String m_name;
+    String m_id;
 
     ApiService m_api;
 
@@ -75,4 +75,9 @@ public abstract class ApiElement<ChildType> {
 
     // this will get called by the public update method
     public abstract void UpdateValues(JSONObject data) throws JSONException;
+
+
+    public String GetFullname() { return m_fullname; }
+    public String GetName()     { return m_name; }
+    public String GetId()       { return m_id; }
 }
