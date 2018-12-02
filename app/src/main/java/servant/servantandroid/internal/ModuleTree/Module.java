@@ -1,5 +1,7 @@
 package servant.servantandroid.internal.ModuleTree;
 
+import android.support.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,4 +32,7 @@ public class Module extends ApiElement<Category> {
             else m_childs.put(id, new Category(json_category, m_api));
         }
     }
+
+    @Override
+    public @NonNull String toString() { return m_name; }
 }

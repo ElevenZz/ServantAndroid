@@ -1,5 +1,7 @@
 package servant.servantandroid.internal;
 
+import android.support.annotation.NonNull;
+
 import servant.servantandroid.internal.ModuleTree.ModuleHandler;
 
 public class ServantInstance {
@@ -10,4 +12,7 @@ public class ServantInstance {
         m_api     = new ApiService(remoteHost);
         m_modules = new ModuleHandler(m_api);
     }
+
+    @Override
+    public @NonNull String toString() { return m_api.GetRemoteHost(); }
 }

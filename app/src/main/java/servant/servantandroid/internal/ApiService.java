@@ -35,4 +35,6 @@ public class ApiService {
 
         client.post(absoluteUrl, params, handler);
     }
+
+    public String GetRemoteHost() { return m_remoteHost; }
 }
