@@ -1,8 +1,9 @@
-package servant.servantandroid;
+package servant.servantandroid.view;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,30 +14,56 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewStub;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import servant.servantandroid.R;
+import servant.servantandroid.internal.ModuleTree.Module;
+import servant.servantandroid.internal.ServantInstance;
+import servant.servantandroid.viewmodel.MainViewModel;
+
+public class MainActivity
+    extends AppCompatActivity
+    implements NavigationView.OnNavigationItemSelectedListener {
+
+    private MainViewModel m_viewModel = new MainViewModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+
+        // bind the header to the current item
+        m_viewModel.GetSelectedInstance().observe(this, (@Nullable ServantInstance instance) -> {
+            // lets not have nullptr's in out app
+            ((TextView)header.findViewById(R.id.textSelectedInstance)).setText(
+                instance == null? "N/A" : instance.toString()
+            );
+        });
+
+        m_viewModel.GetSelectedModule().observe(this, (@Nullable Module module) -> {
+            // lets not have nullptr's in out app
+            ((TextView)header.findViewById(R.id.textSelectedInstance)).setText(
+                module == null? "N/A" : module.toString()
+            );
+        });
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -60,9 +87,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
+            ViewStub stub = findViewById(R.id.layout_stub);
             stub.setLayoutResource(R.layout.content_settings);
-            View inflated = stub.inflate();
+            //View inflated = stub.inflate();
             return true;
         }
 
@@ -71,7 +98,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -92,7 +119,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
