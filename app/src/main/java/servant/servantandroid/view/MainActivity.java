@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewStub;
+import android.widget.Button;
 import android.widget.TextView;
 
 import servant.servantandroid.R;
@@ -40,6 +42,8 @@ public class MainActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        Button addBtn = findViewById(R.id.add_btn);
+
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -49,15 +53,21 @@ public class MainActivity
         m_viewModel.GetSelectedInstance().observe(this, (@Nullable ServantInstance instance) -> {
             // lets not have nullptr's in out app
             ((TextView)header.findViewById(R.id.textSelectedInstance)).setText(
-                instance == null? "N/A" : instance.toString()
+                instance == null? getString(R.string.not_available) : instance.toString()
             );
         });
 
         m_viewModel.GetSelectedModule().observe(this, (@Nullable Module module) -> {
             // lets not have nullptr's in out app
             ((TextView)header.findViewById(R.id.textSelectedInstance)).setText(
-                module == null? "N/A" : module.toString()
+                module == null? getString(R.string.not_available) : module.toString()
             );
+        });
+
+        addBtn.setOnClickListener((View view) -> {
+            AlertDialog dialog = new AlertDialog.Builder(<MainActivity>this).create();
+            dialog.setTitle("Add Server");
+
         });
     }
 
