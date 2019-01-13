@@ -1,4 +1,4 @@
-package servant.servantandroid.internal.ModuleTree.Parameters;
+package servant.servantandroid.internal.api_mirror.parameters;
 
 import org.json.JSONObject;
 
@@ -6,16 +6,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import servant.servantandroid.internal.Logger;
+import servant.servantandroid.internal.ApiService;
 
-/**
- * Singleton registry for all types of parameters
- */
 public class ParameterRegistry {
     // Nahem says: "Don't do JavaScript Kids"
     private Map<String, Class<? extends BaseParameter>> m_parameterTypes = new HashMap<>();
 
-    public BaseParameter ConstructParameter(String parameterName, JSONObject parameter) throws IllegalArgumentException {
+    public BaseParameter constructParameter(String parameterName, JSONObject parameter, ApiService service) throws IllegalArgumentException {
         Class<? extends BaseParameter> parameterClass = m_parameterTypes.get(parameterName);
         BaseParameter instance;
 
@@ -25,7 +22,7 @@ public class ParameterRegistry {
         );}
 
         // create new instance of the specific type
-        try { instance = parameterClass.getDeclaredConstructor(parameterClass).newInstance(parameter); }
+        try { instance = parameterClass.getConstructor(JSONObject.class, ApiService.class).newInstance(parameter, service); }
         catch (NoSuchMethodException|IllegalAccessException|InvocationTargetException|InstantiationException ex) {
             // rethrow with more specific information
             throw new IllegalArgumentException(

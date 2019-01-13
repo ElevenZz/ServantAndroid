@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/addserver_title"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            android:textAlignment="center"/>
+
+        <EditText
+            android:id="@+id/servername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/servername_tooltip" />
+
+        <EditText
+            android:id="@+id/remote_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/server_tooltip" />
+
+    </LinearLayout>
+</layout>

@@ -6,25 +6,26 @@ import com.loopj.android.http.ResponseHandlerInterface;
 
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class ApiService {
     // using an async client here as to not stop the gui
     // and allow multiple capabilities to be executed simultaneously
     private static AsyncHttpClient client = new AsyncHttpClient();
-    private String m_remoteHost;
+    private URL m_remoteHost;
 
-    static {
-        client.setURLEncodingEnabled(true);
+    ApiService(String remoteHost) throws MalformedURLException {
+        m_remoteHost = new URL(remoteHost);
     }
 
-    ApiService(String remoteHost) { m_remoteHost = remoteHost; }
-
-    public void GetRequest(String apiEndpoint, String fullname, ResponseHandlerInterface handler) {
+    public void getRequest(String apiEndpoint, String fullname, ResponseHandlerInterface handler) {
         // string interpolation would be cool here but eh
         String absoluteUrl = String.format("%s/%s/%s", m_remoteHost, apiEndpoint, fullname);
         client.get(absoluteUrl, handler);
     }
 
-    public void PostRequest(String apiEndpoint, String fullname, JSONObject data, ResponseHandlerInterface handler) {
+    public void postRequest(String apiEndpoint, String fullname, JSONObject data, ResponseHandlerInterface handler) {
         // string interpolation would be cool here but eh
         String absoluteUrl = String.format("%s/%s/%s", m_remoteHost, apiEndpoint, fullname);
 
@@ -36,5 +37,5 @@ public class ApiService {
         client.post(absoluteUrl, params, handler);
     }
 
-    public String GetRemoteHost() { return m_remoteHost; }
+    public String getRemoteHost() { return m_remoteHost.getHost(); }
 }

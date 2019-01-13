@@ -1,4 +1,4 @@
-package servant.servantandroid.internal.ModuleTree;
+package servant.servantandroid.internal.api_mirror;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,7 +11,9 @@ public class Category extends ApiElement<Capability> {
     Category(JSONObject obj, ApiService service) { super(obj, service); }
 
     @Override
-    public void UpdateValues(JSONObject data) throws JSONException {
+    public void updateValues(JSONObject data) throws JSONException {
+        super.updateValues(data);
+
         // lol androids JSONArray does not implement the iterable interface
         // what a shame
 
@@ -23,7 +25,7 @@ public class Category extends ApiElement<Capability> {
             Capability capability = m_childs.get(id);
 
             // module already exists we only need to update it :3
-            if (capability != null) capability.UpdateValues(json_capability);
+            if (capability != null) capability.updateValues(json_capability);
                 // module doesn't exist lets create it
             else m_childs.put(id, new Capability(json_capability, m_api));
         }

@@ -1,11 +1,11 @@
 package servant.servantandroid.view;
 
-import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import android.view.View;
+
 import com.google.android.material.navigation.NavigationView;
 import com.xwray.groupie.GroupAdapter;
 
@@ -14,83 +14,64 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import servant.servantandroid.R;
+import servant.servantandroid.internal.Logger;
+import servant.servantandroid.viewmodel.InstanceAdapter;
+import servant.servantandroid.viewmodel.InstancesListAdapter;
+import servant.servantandroid.viewmodel.persistence.DatabaseService;
+
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewStub;
 import android.widget.EditText;
 
 import java.net.MalformedURLException;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import servant.servantandroid.R;
-import servant.servantandroid.viewmodel.InstancesListAdapter;
-import servant.servantandroid.viewmodel.MainViewModel;
-import servant.servantandroid.databinding.ActivityMainBinding;
-import servant.servantandroid.viewmodel.persistence.DatabaseService;
-
-public class MainActivity
+public class StartActivity
     extends AppCompatActivity
     implements
         NavigationView.OnNavigationItemSelectedListener,
         AddServerFragment.AddServerListener {
 
-    private MainViewModel m_viewModel;
     private InstancesListAdapter m_instances;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_start);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Logger.setLogger(new UILogger(getSupportFragmentManager()));
         DatabaseService.initialize(getApplicationContext());
-        m_viewModel = new MainViewModel(
-            getPreferences(Context.MODE_PRIVATE),
-            getSupportFragmentManager()
-        );
+        m_instances = new InstancesListAdapter(this);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        );
-
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        findViewById(R.id.add_btn).setOnClickListener((View v) ->
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener((View v) ->
             new AddServerFragment().show(
                 getSupportFragmentManager(),
                 getString(R.string.addserver_title)
             )
         );
 
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        //m_instances = new InstancesListAdapter(this);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        );
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-        final RecyclerView recyclerView = binding.drawerContent.instancesList;
+        final RecyclerView recyclerView = findViewById(R.id.instances_list);
         GroupAdapter adapter = new GroupAdapter();
+        adapter.setOnItemClickListener((item, view) -> {
+            ((InstanceAdapter)item).update();
+        });
         adapter.add(m_instances);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        findViewById(R.id.add_btn).setOnClickListener((View v) ->
-            new AddServerFragment().show(
-                getSupportFragmentManager(),
-                getString(R.string.addserver_title)
-            )
-        );
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        DatabaseService.getInstance().close();
     }
 
     @Override
@@ -98,14 +79,15 @@ public class MainActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
-        else super.onBackPressed();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.start, menu);
         return true;
     }
 
@@ -118,9 +100,6 @@ public class MainActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            ViewStub stub = findViewById(R.id.layout_stub);
-            stub.setLayoutResource(R.layout.content_settings);
-            //View inflated = stub.inflate();
             return true;
         }
 
@@ -129,21 +108,26 @@ public class MainActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // this is such a fucking stupid anti OOP design pattern
-        // maybe ill fix this sometimes, im not in the mental condition to do so rn tho
-        // sorry bout that
-        switch (item.getGroupId()) {
-            case R.id.server_group:
-                m_viewModel.selectInstance(item.getTitle().toString());
-                break;
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
-            case R.id.modules_group:
-                m_viewModel.selectModule(item.getTitle().toString());
-                ((DrawerLayout)findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
-                break;
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
         }
 
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
