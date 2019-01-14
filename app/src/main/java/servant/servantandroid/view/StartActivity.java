@@ -15,6 +15,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import servant.servantandroid.R;
@@ -68,10 +69,12 @@ public class StartActivity
         adapter.setOnItemClickListener((item, view) -> {
             ((InstanceAdapter)item).update();
         });
+
         adapter.add(m_instances);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        new ItemTouchHelper(m_instances.getTouchCallback()).attachToRecyclerView(recyclerView);
     }
 
     @Override

@@ -23,5 +23,5 @@ interface InstanceDao {
     void update(InstanceEntity... instances);
 
     @Delete
-    void delete(InstanceEntity entity);
+    void delete(InstanceEntity... entity);
 }

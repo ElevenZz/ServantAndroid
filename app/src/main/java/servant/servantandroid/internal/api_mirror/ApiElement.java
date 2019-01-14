@@ -6,15 +6,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.Logger;
+import servant.servantandroid.util.MapListener;
+import servant.servantandroid.util.ObservableMap;
 
-public abstract class ApiElement<ChildType extends ApiElement> {
+public abstract class ApiElement<ChildType extends ApiElement>
+    implements MapListener<ChildType> {
+
     String m_fullname = "";
     String m_name     = "";
     String m_id;
@@ -22,7 +27,8 @@ public abstract class ApiElement<ChildType extends ApiElement> {
     ApiService m_api;
 
     // map for faster/easier access. String is the element id
-    Map<String, ChildType> m_childs = new HashMap<>();
+    Map<String, ChildType> m_childs = new ObservableMap<>();
+    private List<ApiListener<ChildType>> m_observers = new ArrayList<>();
 
     ApiElement(ApiService service) { m_api = service; }
 
@@ -106,16 +112,6 @@ public abstract class ApiElement<ChildType extends ApiElement> {
                     this, throwable
                 );
             }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                super.onSuccess(statusCode, headers, responseString);
-            }
         });
     }
 
@@ -138,6 +134,27 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         m_fullname = data.getString("fullname");
         m_name     = data.getString("name");
         m_id       = data.getString("id");
+    }
+
+    public void addListener(ApiListener listener)    { m_observers.add(listener);    }
+    public void removeListener(ApiListener listener) { m_observers.remove(listener); }
+
+    @Override // relay
+    public void onItemAdd(ChildType item)    { notifyAdd(item);}
+
+    @Override // relay
+    public void onItemRemote(ChildType item) { notifyRemove(item);}
+
+    private void notifyAdd(ChildType item) {
+        for(ApiListener<ChildType> observer : m_observers) observer.onAddChild(item);
+    }
+
+    private void notifyRemove(ChildType item) {
+        for(ApiListener<ChildType> observer : m_observers) observer.onRemoveChild(item);
+    }
+
+    protected final void notifyUpdate() {
+        for(ApiListener observer : m_observers) observer.onUpdate(this);
     }
 
     public String getFullname() { return m_fullname; }

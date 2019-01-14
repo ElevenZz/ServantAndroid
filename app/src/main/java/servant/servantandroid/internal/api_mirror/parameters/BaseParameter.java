@@ -6,12 +6,13 @@ import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.api_mirror.ApiElement;
 
 public abstract class BaseParameter extends ApiElement {
-    private static ParameterRegistry registry = new ParameterRegistry();
+    private static ParameterFactory factory;
 
-    public static ParameterRegistry getRegistry() { return  registry; }
+    // lazy initialization
+    public static ParameterFactory getRegistry() {
+        if(factory == null) factory = new ParameterFactory();
+        return factory;
+    }
 
-    /**
-     * Constructor passthrough
-     */
     BaseParameter(JSONObject object, ApiService service) { super(object, service); }
 }

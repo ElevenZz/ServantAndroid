@@ -28,5 +28,7 @@ public class ModuleHandler extends ApiElement<Module> {
             // module doesn't exist lets create it
             else m_childs.put(id, new Module(json_module, m_api));
         }
+
+        notifyUpdate();
     }
 }

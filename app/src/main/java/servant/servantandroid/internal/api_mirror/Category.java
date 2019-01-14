@@ -29,5 +29,7 @@ public class Category extends ApiElement<Capability> {
                 // module doesn't exist lets create it
             else m_childs.put(id, new Capability(json_capability, m_api));
         }
+
+        notifyUpdate();
     }
 }

@@ -33,6 +33,8 @@ public class Module extends ApiElement<Category> {
                 // module doesn't exist lets create it
             else m_childs.put(id, new Category(json_category, m_api));
         }
+
+        notifyUpdate();
     }
 
     @Override

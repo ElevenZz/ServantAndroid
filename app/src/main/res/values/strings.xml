@@ -16,7 +16,5 @@
     <string name="error_title">Something went wrong</string>
     <string name="error_details">Error Details:</string>
     <string name="saved_viewmodel">viewmodel</string>
-    <string name="title_activity_start">StartActivity</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="remove_approval">do you really want to delete instance "%s"?</string>
 </resources>

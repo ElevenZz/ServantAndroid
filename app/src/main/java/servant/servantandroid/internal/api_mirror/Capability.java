@@ -31,5 +31,7 @@ public class Capability extends ApiElement<BaseParameter> {
             else m_childs.put(id,
                 BaseParameter.getRegistry().constructParameter(id, json_parameter, m_api));
         }
+
+        notifyUpdate();
     }
 }
