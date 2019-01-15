@@ -26,12 +26,12 @@ public class Module extends ApiElement<Category> {
             JSONObject json_category = categories.getJSONObject(c);
             String id = json_category.getString("id");
 
-            Category category = m_childs.get(id);
+            Category category = getChildById(id);
 
             // module already exists we only need to update it :3
             if (category != null) category.updateValues(json_category);
                 // module doesn't exist lets create it
-            else m_childs.put(id, new Category(json_category, m_api));
+            else addChild(id, new Category(json_category, m_api));
         }
 
         notifyUpdate();

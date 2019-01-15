@@ -12,6 +12,7 @@ import java.util.Map;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 import servant.servantandroid.R;
 import servant.servantandroid.internal.ServantInstance;
@@ -22,13 +23,14 @@ public class InstancesListAdapter extends Section {
     private Map<InstanceAdapter, ServantInstance> m_instances;
     private TouchCallback m_touchCallback;
     private ComponentActivity m_context;
+    private MutableLiveData m_selectedModule;
 
-    public InstancesListAdapter(ComponentActivity ctx) {
+    public InstancesListAdapter(ComponentActivity ctx, MutableLiveData<ModuleAdapter> selectedModule) {
         m_instances = new HashMap<>();
         m_context = ctx;
 
         // 50 shades of lambda
-        DatabaseService.getInstance().getInstances((ServantInstance instance) ->
+        DatabaseService.getInstance().getServantInstances((ServantInstance instance) ->
             m_context.runOnUiThread(() -> addInstance(instance))
         );
 
@@ -79,7 +81,7 @@ public class InstancesListAdapter extends Section {
     }
 
     private void addInstance(ServantInstance instance) {
-        InstanceAdapter adapter  = new InstanceAdapter(m_context, instance);
+        InstanceAdapter adapter  = new InstanceAdapter(m_context, instance, m_selectedModule);
         ExpandableGroup group    = new ExpandableGroup(adapter);
 
         m_instances.put(adapter, instance);

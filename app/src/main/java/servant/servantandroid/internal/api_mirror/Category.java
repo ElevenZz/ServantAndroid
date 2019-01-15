@@ -22,12 +22,12 @@ public class Category extends ApiElement<Capability> {
             JSONObject json_capability = capabilities.getJSONObject(c);
             String id = json_capability.getString("id");
 
-            Capability capability = m_childs.get(id);
+            Capability capability = getChildById(id);
 
             // module already exists we only need to update it :3
             if (capability != null) capability.updateValues(json_capability);
                 // module doesn't exist lets create it
-            else m_childs.put(id, new Capability(json_capability, m_api));
+            else addChild(id, new Capability(json_capability, m_api));
         }
 
         notifyUpdate();

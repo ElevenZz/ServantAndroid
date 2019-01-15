@@ -21,12 +21,12 @@ public class ModuleHandler extends ApiElement<Module> {
             JSONObject json_module = modules.getJSONObject(c);
             String id = json_module.getString("id");
 
-            Module module = m_childs.get(id);
+            Module module = getChildById(id);
 
             // module already exists we only need to update it :3
             if (module != null) module.updateValues(json_module);
             // module doesn't exist lets create it
-            else m_childs.put(id, new Module(json_module, m_api));
+            else addChild(id, new Module(json_module, m_api));
         }
 
         notifyUpdate();

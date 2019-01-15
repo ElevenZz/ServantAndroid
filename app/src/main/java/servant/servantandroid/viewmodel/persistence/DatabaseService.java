@@ -16,6 +16,8 @@ import java.util.List;
 import androidx.core.util.Consumer;
 import androidx.room.Room;
 import servant.servantandroid.internal.ServantInstance;
+import servant.servantandroid.internal.api_mirror.ApiElement;
+import servant.servantandroid.internal.api_mirror.ApiListener;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
 import servant.servantandroid.util.ExecuteAsync;
 
@@ -30,7 +32,6 @@ public class DatabaseService {
     private LocalDatabase m_db;
 
     private DatabaseService(Context ctx) {
-        // Context prevents me from doing sum noice lazy initialization :(
         m_db = Room.databaseBuilder(
             ctx,
             LocalDatabase.class,
@@ -67,19 +68,20 @@ public class DatabaseService {
         ExecuteAsync.execute(() -> m_db.instanceDao().delete(instancesToEntities(instances)));
     }
 
-    public void getInstances(Consumer<ServantInstance> callback) {
+    public void getServantInstances(Consumer<ServantInstance> callback) {
         ExecuteAsync.execute(() -> {
             for(InstanceEntity entity : m_db.instanceDao().getAllInstances()) {
                 callback.accept(
                     new GsonBuilder()
-                        .registerTypeAdapter(BaseParameter.class, new JsonDeserializer<BaseParameter>() {
-                            @Override
-                            public BaseParameter deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                                return context.deserialize(json, BaseParameter.getRegistry().resolve(
+                        .registerTypeAdapter(
+                            BaseParameter.class,
+                            (JsonDeserializer<BaseParameter>)(json, type, ctx) ->
+                                ctx.deserialize(json, BaseParameter.getRegistry().resolve(
                                     json.getAsJsonObject().get("m_id").getAsString()
-                                ));
-                            }
-                        }).create().fromJson(entity.serialzedInstance, ServantInstance.class)
+                                ))
+                        )
+                        .create()
+                        .fromJson(entity.serialzedInstance, ServantInstance.class)
                 );
             }
         });

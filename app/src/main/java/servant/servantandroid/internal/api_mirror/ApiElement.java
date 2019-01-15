@@ -8,27 +8,32 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.Logger;
-import servant.servantandroid.util.MapListener;
-import servant.servantandroid.util.ObservableMap;
 
-public abstract class ApiElement<ChildType extends ApiElement>
-    implements MapListener<ChildType> {
+public abstract class ApiElement<ChildType extends ApiElement> {
 
+    // empty in case of root element
     String m_fullname = "";
     String m_name     = "";
-    String m_id;
+    String m_id       = "";
 
     ApiService m_api;
 
     // map for faster/easier access. String is the element id
-    Map<String, ChildType> m_childs = new ObservableMap<>();
-    private List<ApiListener<ChildType>> m_observers = new ArrayList<>();
+    private Map<String, ChildType> m_childs = new HashMap<>();
+    private transient List<ApiListener<ChildType>> m_observers;
+
+    // forced lazy initialization to make this serialization safe
+    private List<ApiListener<ChildType>> getObservers() {
+        if(m_observers == null) m_observers = new ArrayList<>();
+        return m_observers;
+    }
 
     ApiElement(ApiService service) { m_api = service; }
 
@@ -67,14 +72,14 @@ public abstract class ApiElement<ChildType extends ApiElement>
                         Logger.Type.ERROR,
                         String.format(
                             "Malformed data received while trying to update an api chain @ %s " +
-                            "malformed data is: %s \n" +
                             "exception is: %s \n" +
-                            "if you have the latest version of the servant app please report this at the github repository",
+                            "This might indicate that the server is either not running the latest version of servant or " +
+                            "is not running servant at all on that port.",
                             m_fullname,
                             response.toString(),
                             ex.toString()
                         ),
-                        m_fullname
+                        m_fullname, ex
                     );
                 }
             }
@@ -116,13 +121,10 @@ public abstract class ApiElement<ChildType extends ApiElement>
     }
 
     public Collection<ChildType> getChilds() { return m_childs.values(); }
+    public ChildType getChildById(String id) { return m_childs.get(id); }
 
-    public ApiElement getChildById(String id) {
-        return m_childs.get(id);
-    }
-
-    public ApiElement getChildByName(String name) {
-        for (ApiElement elem : m_childs.values()) {
+    public ChildType getChildByName(String name) {
+        for (ChildType elem : m_childs.values()) {
             if(elem.m_name.equals(name)) return elem;
         }
 
@@ -136,25 +138,28 @@ public abstract class ApiElement<ChildType extends ApiElement>
         m_id       = data.getString("id");
     }
 
-    public void addListener(ApiListener listener)    { m_observers.add(listener);    }
-    public void removeListener(ApiListener listener) { m_observers.remove(listener); }
+    public void addListener(ApiListener listener)    { getObservers().add(listener);    }
+    public void removeListener(ApiListener listener) { getObservers().remove(listener); }
 
-    @Override // relay
-    public void onItemAdd(ChildType item)    { notifyAdd(item);}
+    protected void addChild(String id, ChildType child) {
+        notifyAdd(child);
+        m_childs.put(id, child);
+    }
 
-    @Override // relay
-    public void onItemRemote(ChildType item) { notifyRemove(item);}
+    public void removeChild(String id) {
+        notifyRemove(m_childs.remove(id));
+    }
 
     private void notifyAdd(ChildType item) {
-        for(ApiListener<ChildType> observer : m_observers) observer.onAddChild(item);
+        for(ApiListener<ChildType> observer : getObservers()) observer.onAddChild(item);
     }
 
     private void notifyRemove(ChildType item) {
-        for(ApiListener<ChildType> observer : m_observers) observer.onRemoveChild(item);
+        for(ApiListener<ChildType> observer : getObservers()) observer.onRemoveChild(item);
     }
 
     protected final void notifyUpdate() {
-        for(ApiListener observer : m_observers) observer.onUpdate(this);
+        for(ApiListener observer : getObservers()) observer.onUpdate(this);
     }
 
     public String getFullname() { return m_fullname; }

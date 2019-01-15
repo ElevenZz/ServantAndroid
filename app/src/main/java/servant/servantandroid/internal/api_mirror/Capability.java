@@ -23,13 +23,17 @@ public class Capability extends ApiElement<BaseParameter> {
             JSONObject json_parameter = parameters.getJSONObject(c);
             String id = json_parameter.getString("id");
 
-            BaseParameter parameter = m_childs.get(id);
+            BaseParameter parameter = getChildById(id);
 
             // module already exists we only need to update it :3
             if (parameter != null) parameter.updateValues(json_parameter);
-                // module doesn't exist lets create it
-            else m_childs.put(id,
-                BaseParameter.getRegistry().constructParameter(id, json_parameter, m_api));
+            // module doesn't exist lets create it
+            else addChild(
+                id,
+                BaseParameter
+                    .getRegistry()
+                    .constructParameter(id, json_parameter, m_api)
+            );
         }
 
         notifyUpdate();

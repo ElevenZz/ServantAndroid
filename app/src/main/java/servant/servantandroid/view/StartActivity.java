@@ -1,27 +1,28 @@
 package servant.servantandroid.view;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import android.view.View;
-
-import com.google.android.material.navigation.NavigationView;
 import com.xwray.groupie.GroupAdapter;
 
 import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import servant.servantandroid.R;
+import servant.servantandroid.databinding.ActivityStartBinding;
 import servant.servantandroid.internal.Logger;
-import servant.servantandroid.viewmodel.InstanceAdapter;
 import servant.servantandroid.viewmodel.InstancesListAdapter;
+import servant.servantandroid.viewmodel.ModuleAdapter;
 import servant.servantandroid.viewmodel.persistence.DatabaseService;
 
 import android.view.Menu;
@@ -31,50 +32,53 @@ import android.widget.EditText;
 import java.net.MalformedURLException;
 
 public class StartActivity
-    extends AppCompatActivity
-    implements
-        NavigationView.OnNavigationItemSelectedListener,
-        AddServerFragment.AddServerListener {
+    extends AppCompatActivity implements AddServerFragment.AddServerListener {
 
     private InstancesListAdapter m_instances;
+    private ActivityStartBinding m_binding;
+    private MutableLiveData<ModuleAdapter> m_selectedModule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        m_selectedModule = new MutableLiveData<>();
+        m_binding = DataBindingUtil.setContentView(this, R.layout.activity_start);
+
+        Toolbar toolbar = m_binding.appbar.toolbar;
         setSupportActionBar(toolbar);
 
         Logger.setLogger(new UILogger(getSupportFragmentManager()));
-        DatabaseService.initialize(getApplicationContext());
-        m_instances = new InstancesListAdapter(this);
+        Context ctx = getApplicationContext();
+        DatabaseService.initialize(ctx);
+        m_instances = new InstancesListAdapter(this, m_selectedModule);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener((View v) ->
+        FloatingActionButton fab = m_binding.appbar.fab;
+        fab.setOnClickListener((v) ->
             new AddServerFragment().show(
                 getSupportFragmentManager(),
                 getString(R.string.addserver_title)
             )
         );
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = m_binding.drawerLayout;
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         );
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        final RecyclerView recyclerView = findViewById(R.id.instances_list);
+        final RecyclerView instancesView  = m_binding.drawerContent.instancesList;
+
         GroupAdapter adapter = new GroupAdapter();
         adapter.setOnItemClickListener((item, view) -> {
-            ((InstanceAdapter)item).update();
+            if(item instanceof ClickableItem) { ((ClickableItem)item).onClick(view); }
         });
 
         adapter.add(m_instances);
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        new ItemTouchHelper(m_instances.getTouchCallback()).attachToRecyclerView(recyclerView);
+        instancesView.setAdapter(adapter);
+        instancesView.setLayoutManager(new LinearLayoutManager(this));
+        new ItemTouchHelper(m_instances.getTouchCallback()).attachToRecyclerView(instancesView);
     }
 
     @Override
@@ -107,31 +111,6 @@ public class StartActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     @Override

@@ -13,19 +13,11 @@ import androidx.annotation.NonNull;
 import servant.servantandroid.R;
 import servant.servantandroid.databinding.HeaderLayoutBinding;
 
-public class ExpandableHeaderItem<T>
+public class ExpandableHeaderItem
     extends BindableItem<HeaderLayoutBinding>
     implements ExpandableItem {
 
-    protected T m_item;
-    protected ComponentActivity  m_context;
-
     protected ExpandableGroup m_expandableGroup;
-
-    public ExpandableHeaderItem(ComponentActivity ctx, T item) {
-        m_context = ctx;
-        m_item = item;
-    }
 
     @Override public void bind(@NonNull final HeaderLayoutBinding viewBinding, int position) {
         viewBinding.icon.setVisibility(View.VISIBLE);
