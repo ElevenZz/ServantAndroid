@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.xwray.groupie.GroupAdapter;
+import com.xwray.groupie.OnItemClickListener;
 
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
@@ -69,15 +70,30 @@ public class StartActivity
         toggle.syncState();
 
         final RecyclerView instancesView  = m_binding.drawerContent.instancesList;
+        final RecyclerView categoriesView = m_binding.appbar.content.categoriesList;
 
-        GroupAdapter adapter = new GroupAdapter();
-        adapter.setOnItemClickListener((item, view) -> {
+        GroupAdapter instancesAdapter  = new GroupAdapter();
+        GroupAdapter categoriesAdapter = new GroupAdapter();
+
+        OnItemClickListener listener = (item, view) -> {
             if(item instanceof ClickableItem) { ((ClickableItem)item).onClick(view); }
-        });
+        };
 
-        adapter.add(m_instances);
-        instancesView.setAdapter(adapter);
+        instancesAdapter.setOnItemClickListener(listener);
+        categoriesAdapter.setOnItemClickListener(listener);
+
+        instancesAdapter.add(m_instances);
+
+        instancesView.setAdapter(instancesAdapter);
         instancesView.setLayoutManager(new LinearLayoutManager(this));
+
+        m_selectedModule.observe(this, (module) ->
+            runOnUiThread(() -> categoriesAdapter.update(module.getCategories()))
+        );
+
+        categoriesView.setAdapter(categoriesAdapter);
+        categoriesView.setLayoutManager(new LinearLayoutManager(this));
+
         new ItemTouchHelper(m_instances.getTouchCallback()).attachToRecyclerView(instancesView);
     }
 

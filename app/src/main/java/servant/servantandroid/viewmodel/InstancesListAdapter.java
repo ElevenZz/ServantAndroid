@@ -19,6 +19,7 @@ import servant.servantandroid.internal.ServantInstance;
 import servant.servantandroid.viewmodel.persistence.DatabaseService;
 
 public class InstancesListAdapter extends Section {
+
     // BiMap would be cool here but i don't want more deps
     private Map<InstanceAdapter, ServantInstance> m_instances;
     private TouchCallback m_touchCallback;
@@ -28,6 +29,7 @@ public class InstancesListAdapter extends Section {
     public InstancesListAdapter(ComponentActivity ctx, MutableLiveData<ModuleAdapter> selectedModule) {
         m_instances = new HashMap<>();
         m_context = ctx;
+        m_selectedModule = selectedModule;
 
         // 50 shades of lambda
         DatabaseService.getInstance().getServantInstances((ServantInstance instance) ->
