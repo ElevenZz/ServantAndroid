@@ -2,55 +2,54 @@ package servant.servantandroid.viewmodel;
 
 import android.view.View;
 
-import com.xwray.groupie.ExpandableGroup;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import servant.servantandroid.R;
 import servant.servantandroid.databinding.HeaderLayoutBinding;
 import servant.servantandroid.internal.ServantInstance;
-import servant.servantandroid.internal.api_mirror.ApiElement;
-import servant.servantandroid.internal.api_mirror.ApiListener;
 import servant.servantandroid.internal.api_mirror.Module;
+import servant.servantandroid.internal.api_mirror.ModuleHandler;
 import servant.servantandroid.view.ClickableItem;
-import servant.servantandroid.view.ExpandableHeaderItem;
 import servant.servantandroid.viewmodel.persistence.DatabaseService;
 
-public class InstanceAdapter extends ExpandableHeaderItem
-    implements ApiListener<Module>, ClickableItem {
+public class InstanceAdapter extends ApiAdapter<HeaderLayoutBinding, ModuleHandler, Module, ModuleAdapter>
+    implements ClickableItem {
 
-    private Map<Module, ModuleAdapter> m_modules;
-    private ComponentActivity m_context;
-    private ServantInstance m_instance;
+    //private Map<Module, ModuleAdapter> m_modules;
+    //private ComponentActivity m_context;
+    //private ServantInstance m_instance;
     private MutableLiveData<ModuleAdapter> m_selectedModule;
+    private ServantInstance m_instance;
 
     InstanceAdapter(ComponentActivity ctx, ServantInstance instance, MutableLiveData<ModuleAdapter> selected) {
-        m_context = ctx;
-        m_instance = instance;
-        m_selectedModule = selected;
+        super(ctx, instance.getModuleHandler());
 
-        instance.getModuleHandler().addListener(this);
+        m_selectedModule = selected;
+        m_instance = instance;
     }
 
     @Override
     public void bind(@NonNull HeaderLayoutBinding viewBinding, int position) {
-        super.bind(viewBinding, position);
-
-        viewBinding.title.setText(getName());
+        bindExpandIcon(viewBinding.icon);
+        viewBinding.title.setText(m_instance.getName());
         viewBinding.subtitle.setText(m_instance.toString());
     }
 
-    @Override public int getSwipeDirs()      { return ItemTouchHelper.RIGHT; }
-    @Override public void onClick(View view) { m_instance.getModuleHandler().update(); }
+    @Override public int getSwipeDirs() { return ItemTouchHelper.RIGHT; }
+
+    @Override
+    public int getLayout() {
+        return R.layout.header_layout;
+    }
+
+    @Override public void onClick(View view) { m_element.update(); }
     @Override public boolean isClickable()   { return true; }
 
     public String getName() { return m_instance.getName(); }
     public ServantInstance getInstance() { return m_instance; }
-
+/*
     @Override
     public void setExpandableGroup(@NonNull ExpandableGroup onToggleListener) {
         super.setExpandableGroup(onToggleListener);
@@ -61,25 +60,31 @@ public class InstanceAdapter extends ExpandableHeaderItem
             onToggleListener.add(adapter);
         }
     }
-
+*/
     @Override
-    public void onAddChild(Module item) {
-        ModuleAdapter adapter = new ModuleAdapter(m_context, item, m_selectedModule);
-        m_modules.put(item, adapter);
-        notifyChanged();
-
-        m_context.runOnUiThread(() -> m_expandableGroup.add(adapter));
+    protected ModuleAdapter instanciateChildAdapter(Module child) {
+        return new ModuleAdapter(m_context, child, m_selectedModule);
     }
 
-    @Override
-    public void onRemoveChild(Module item) {
-        notifyChanged();
-        m_context.runOnUiThread(() -> m_expandableGroup.remove(m_modules.remove(item)));
-    }
+    /*
+        @Override
+        public void onAddChild(Module item) {
+            ModuleAdapter adapter = new ModuleAdapter(m_context, item, m_selectedModule);
+            m_modules.put(item, adapter);
+            notifyChanged();
 
-    @Override
-    public void onUpdate(ApiElement me) { notifyChanged(); }
+            m_context.runOnUiThread(() -> m_expandableGroup.add(adapter));
+        }
 
+        @Override
+        public void onRemoveChild(Module item) {
+            notifyChanged();
+            m_context.runOnUiThread(() -> m_expandableGroup.remove(m_modules.remove(item)));
+        }
+
+        @Override
+        public void onUpdate(ApiElement me) { notifyChanged(); }
+    */
     @Override
     public void notifyChanged() {
         super.notifyChanged();

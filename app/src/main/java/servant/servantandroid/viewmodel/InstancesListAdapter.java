@@ -55,7 +55,7 @@ public class InstancesListAdapter extends Section {
             .setPositiveButton(R.string.ok, (d, w) -> {
                 // remove
                 DatabaseService.getInstance().removeServantInstance(m_instances.remove(instance));
-                remove(instance.getExpandableGroup());
+                remove(instance.getGroup());
             })
             .setNegativeButton(R.string.cancel, (d, w) -> {
                 notifyChanged(); // let the item come back

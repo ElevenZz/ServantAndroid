@@ -23,31 +23,26 @@ import servant.servantandroid.internal.api_mirror.Category;
 import servant.servantandroid.internal.api_mirror.Module;
 import servant.servantandroid.view.ClickableItem;
 
-public class ModuleAdapter extends BindableItem<ModuleItemBinding>
-    implements ApiListener<Category>, ClickableItem {
+public class ModuleAdapter extends ApiAdapter<ModuleItemBinding, Module, Category, CategoryAdapter>
+    implements ClickableItem {
 
-    private Map<Category, ExpandableGroup> m_categories;
-    private Module m_module;
-    private ComponentActivity m_context;
     private MutableLiveData<ModuleAdapter> m_selectedModule;
 
     ModuleAdapter(ComponentActivity ctx, Module module, MutableLiveData<ModuleAdapter> selected) {
-        m_context = ctx;
-        m_module = module;
+        super(ctx, module);
         m_selectedModule = selected;
+    }
 
-        m_categories = new HashMap<>();
-        for(Category cat : module.getChilds())
-            m_categories.put(cat, new ExpandableGroup(new CategoryAdapter(ctx, cat)));
-
-        module.addListener(this);
+    @Override
+    protected CategoryAdapter instanciateChildAdapter(Category child) {
+        return new CategoryAdapter(m_context, child);
     }
 
     @Override
     public void bind(@NonNull ModuleItemBinding viewBinding, int position) {
-        viewBinding.name.setText(m_module.getName());
-        viewBinding.details.setText(m_module.toString());
-        viewBinding.version.setText(m_module.getVersion());
+        viewBinding.name.setText(m_element.getName());
+        viewBinding.details.setText(m_element.toString());
+        viewBinding.version.setText(m_element.getVersion());
     }
 
     @Override public int getLayout()       { return R.layout.module_item; }
@@ -63,18 +58,18 @@ public class ModuleAdapter extends BindableItem<ModuleItemBinding>
         start.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
-    public Collection<ExpandableGroup> getCategories() { return m_categories.values(); }
+    public Collection<ExpandableGroup> getCategories() { return m_childs.values(); }
 
+    // overriding since the base implementation adds the child to the ui group which we don't want
     @Override
     public void onAddChild(Category item) {
-        m_categories.put(item,  new ExpandableGroup(new CategoryAdapter(m_context, item)));
+        m_childs.put(item,  new ExpandableGroup(new CategoryAdapter(m_context, item)));
+        notifyChanged();
     }
 
     @Override
     public void onRemoveChild(Category item) {
-        m_categories.remove(item);
+        m_childs.remove(item);
+        notifyChanged();
     }
-
-    @Override
-    public void onUpdate(ApiElement item) { notifyChanged(); }
 }

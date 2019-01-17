@@ -1,12 +1,17 @@
 package servant.servantandroid.viewmodel;
 
+import android.graphics.drawable.Animatable;
+import android.view.View;
+
 import com.xwray.groupie.ExpandableGroup;
 import com.xwray.groupie.ExpandableItem;
 import com.xwray.groupie.databinding.BindableItem;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.databinding.ViewDataBinding;
+import servant.servantandroid.R;
 import servant.servantandroid.internal.api_mirror.ApiElement;
 import servant.servantandroid.internal.api_mirror.ApiListener;
 
@@ -16,7 +21,7 @@ import java.util.HashMap;
 public abstract class ApiAdapter<
     BindingType      extends ViewDataBinding,
     ApiElementType   extends ApiElement,
-    ApiChildType     extends ApiElementType,
+    ApiChildType     extends ApiElement,
     AdapterChildType extends ApiAdapter>
 
     extends BindableItem<BindingType>
@@ -38,16 +43,37 @@ public abstract class ApiAdapter<
     }
 
     protected abstract AdapterChildType instanciateChildAdapter(ApiChildType child);
+
+    protected void bindExpandIcon(AppCompatImageView icon) {
+        initializeIcon(icon);
+        icon.setOnClickListener((view) -> {
+            m_expandToggle.onToggleExpanded();
+            initializeIcon(icon);
+            ((Animatable)icon.getDrawable()).start();
+        });
+    }
+
+    private void initializeIcon(AppCompatImageView icon) {
+        icon.setVisibility(View.VISIBLE);
+        icon.setImageResource(
+            m_expandToggle.isExpanded() ?
+                R.drawable.collapse_animated : R.drawable.expand_animated
+        );
+    }
+
     ExpandableGroup getGroup() { return m_expandToggle; }
     Collection<ExpandableGroup> getChilds() { return m_childs.values(); }
 
     @Override
     public void onAddChild(ApiChildType item) {
-        ExpandableGroup group = new ExpandableGroup(instanciateChildAdapter(item));
-        m_childs.put(item, group);
-        m_context.runOnUiThread(() -> m_expandToggle.add(group));
+        AdapterChildType adapter = instanciateChildAdapter(item);
+        if(adapter != null) {
+            ExpandableGroup group = new ExpandableGroup(adapter);
+            m_childs.put(item, group);
+            m_context.runOnUiThread(() -> m_expandToggle.add(group));
 
-        notifyChanged();
+            notifyChanged();
+        }
     }
 
     @Override
