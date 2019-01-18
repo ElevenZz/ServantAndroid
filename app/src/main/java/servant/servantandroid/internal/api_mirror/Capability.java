@@ -15,6 +15,7 @@ public class Capability extends ApiElement<BaseParameter> {
     @Override
     public void updateValues(JSONObject data) throws JSONException {
         super.updateValues(data);
+        // TODO: put most of this garbage in base, delete old childs
 
         // lol androids JSONArray does not implement the iterable interface
         // what a shame
@@ -22,7 +23,8 @@ public class Capability extends ApiElement<BaseParameter> {
         JSONArray parameters = data.getJSONArray("parameters");
         for(int c = 0; c < parameters.length(); c++ /*pun intended*/) {
             JSONObject json_parameter = parameters.getJSONObject(c);
-            String id = json_parameter.getString("id");
+            String id   = json_parameter.getString("id");
+            String type = json_parameter.getString("type");
 
             BaseParameter parameter = getChildById(id);
 
@@ -33,7 +35,7 @@ public class Capability extends ApiElement<BaseParameter> {
                 id,
                 BaseParameter
                     .getRegistry()
-                    .constructParameter(id, json_parameter, m_api)
+                    .constructParameter(type, json_parameter, m_api)
             );
         }
 

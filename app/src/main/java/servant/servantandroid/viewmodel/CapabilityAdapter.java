@@ -7,7 +7,8 @@ import servant.servantandroid.databinding.HeaderLayoutBinding;
 import servant.servantandroid.internal.api_mirror.Capability;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
 
-public class CapabilityAdapter extends ApiAdapter<HeaderLayoutBinding, Capability, BaseParameter, BaseParameterAdapter> {
+public class CapabilityAdapter
+    extends ApiAdapter<HeaderLayoutBinding, Capability, BaseParameter, BaseParameterAdapter> {
 
     CapabilityAdapter(ComponentActivity ctx, Capability capability) { super(ctx, capability); }
 
@@ -20,6 +21,7 @@ public class CapabilityAdapter extends ApiAdapter<HeaderLayoutBinding, Capabilit
 
     @Override
     public void bind(@NonNull HeaderLayoutBinding viewBinding, int position) {
+        bindExpandIcon(viewBinding.icon);
         viewBinding.title.setText(m_element.getName());
     }
 }
