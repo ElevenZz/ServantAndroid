@@ -19,22 +19,12 @@ public class Module extends ApiElement<Category> {
         m_author  = data.getString("author");
         m_version = data.getString("version");
 
-        // lol androids JSONArray does not implement the iterable interface
-        // what a shame
-        JSONArray categories = data.getJSONArray("categories");
-        for(int c = 0; c < categories.length(); c++ /*pun intended*/) {
-            JSONObject json_category = categories.getJSONObject(c);
-            String id = json_category.getString("id");
-
-            Category category = getChildById(id);
-
-            // module already exists we only need to update it :3
-            if (category != null) category.updateValues(json_category);
-                // module doesn't exist lets create it
-            else addChild(id, new Category(json_category, m_api));
-        }
-
         notifyUpdate();
+    }
+
+    @Override
+    Category instanciateChild(JSONObject json) {
+        return new Category(json, m_api);
     }
 
     @Override

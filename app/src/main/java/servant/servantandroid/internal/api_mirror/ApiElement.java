@@ -9,8 +9,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 import servant.servantandroid.internal.ApiService;
@@ -136,18 +138,45 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         m_fullname = data.getString("fullname");
         m_name     = data.getString("name");
         m_id       = data.getString("id");
+
+        // copy the id set from the map
+        Set<String> currentIds = new HashSet<>(m_childs.keySet());
+        JSONArray childs = data.optJSONArray("childs");
+        if(childs != null) {
+            // seems like androids JSONArray does not implement the iterable interface
+            // what a shame
+            for(int c = 0; c < childs.length(); c++ /* pun intended */) {
+                JSONObject jsonChild = childs.getJSONObject(c);
+                String     childId   = jsonChild.getString("id");
+
+                ChildType child = getChildById(childId);
+                if(child != null) child.updateValues(jsonChild);
+                else child = addChild(childId, instanciateChild(jsonChild));
+
+                // remove the child we interacted with
+                // we basically remove all child's that exist in the json
+                currentIds.remove(child.getId());
+            }
+        }
+
+        // now the remaining child's are the ones not present in the json but present locally
+        // we remove all of them since they were removed on the server
+        removeAll(currentIds);
     }
+
+    abstract ChildType instanciateChild(JSONObject json) throws JSONException;
 
     public void addListener(ApiListener listener)    { getObservers().add(listener);    }
     public void removeListener(ApiListener listener) { getObservers().remove(listener); }
 
-    protected void addChild(String id, ChildType child) {
+    ChildType addChild(String id, ChildType child) {
         notifyAdd(child);
         m_childs.put(id, child);
+        return child;
     }
 
-    public void removeChild(String id) {
-        notifyRemove(m_childs.remove(id));
+    void removeAll(Collection<String> ids) {
+        for (String id : ids) notifyRemove(m_childs.remove(id));
     }
 
     private void notifyAdd(ChildType item) {

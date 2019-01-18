@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import servant.servantandroid.internal.ApiService;
+import servant.servantandroid.internal.Logger;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
 
 public class Capability extends ApiElement<BaseParameter> {
@@ -37,5 +38,12 @@ public class Capability extends ApiElement<BaseParameter> {
         }
 
         notifyUpdate();
+    }
+
+    @Override
+    BaseParameter instanciateChild(JSONObject json) throws JSONException {
+        return BaseParameter.getRegistry().constructParameter(
+            json.getString("type"), json, m_api
+        );
     }
 }
