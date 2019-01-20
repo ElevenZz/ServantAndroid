@@ -8,8 +8,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import servant.servantandroid.internal.ApiService;
+import servant.servantandroid.internal.api_mirror.Capability;
 
+// TODO: do this in a less csharpy way
 public class ParameterFactory {
+    // https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+    private static class LazyHolder {
+        private static final ParameterFactory instance = new ParameterFactory();
+    }
+
+    public static ParameterFactory getInstance() {
+        return LazyHolder.instance;
+    }
+
     // Nahem says: "Don't do JavaScript Kids"
     private Map<String, Class<? extends BaseParameter>> m_parameterTypes = new HashMap<>();
 
@@ -17,13 +28,15 @@ public class ParameterFactory {
         return m_parameterTypes.get(parameterName);
     }
 
-    public BaseParameter constructParameter(String parameterName, JSONObject parameter, ApiService service) throws IllegalArgumentException {
+    public BaseParameter constructParameter(String parameterName, JSONObject parameter, ApiService service)
+        throws IllegalArgumentException {
+
         Class<? extends BaseParameter> parameterClass = resolve(parameterName);
         BaseParameter instance;
 
         if(parameterClass == null) { throw new IllegalArgumentException(
-                "parameter of type: " + parameterName + " does not exist in this version of the application. " +
-                        "if the problem persists after updating the app, please report this to the servant authors"
+            "parameter of type: " + parameterName + " does not exist in this version of the application. " +
+            "if the problem persists after updating the app, please report this to the servant authors"
         );}
 
         // create new instance of the specific type
@@ -31,9 +44,9 @@ public class ParameterFactory {
         catch (NoSuchMethodException|IllegalAccessException|InvocationTargetException|InstantiationException ex) {
             // rethrow with more specific information
             throw new IllegalArgumentException(
-                    "parameter of type " + parameterName + " failed to deserialize. " +
-                            "if the problem persists with the newest version of the application please report this error to the servant authors. " +
-                            "Details: " + ex.toString()
+                "parameter of type " + parameterName + " failed to deserialize. " +
+                "if the problem persists with the newest version of the application please report this error to the servant authors. " +
+                "Details: " + ex.toString()
             );
         }
 
