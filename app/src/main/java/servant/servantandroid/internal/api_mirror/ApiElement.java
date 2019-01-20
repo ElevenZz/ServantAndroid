@@ -1,34 +1,37 @@
 package servant.servantandroid.internal.api_mirror;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cz.msebera.android.httpclient.Header;
+import androidx.annotation.NonNull;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.internal.annotations.EverythingIsNonNull;
 import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.Logger;
 
 public abstract class ApiElement<ChildType extends ApiElement> {
 
     // empty in case of root element
-    String m_fullname = "";
-    String m_name     = "";
-    String m_id       = "";
+    protected String m_fullname;
+    protected String m_name;
+    protected String m_id;
 
     ApiService m_api;
 
     // map for faster/easier access. String is the element id
-    private Map<String, ChildType> m_childs = new HashMap<>();
+    private Map<String, ChildType> m_childs = new LinkedHashMap<>();
     private transient List<ApiListener<ChildType>> m_observers;
 
     // forced lazy initialization to make this serialization safe
@@ -37,7 +40,9 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         return m_observers;
     }
 
-    ApiElement(ApiService service) { m_api = service; }
+    ApiElement(ApiService service) {
+        m_api = service;
+    }
 
     /**
      * create a new api element by parsing the json object
@@ -63,67 +68,45 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         }
     }
 
-    public void update() {
-        m_api.getRequest(ModuleHandler.API_ENDPOINT, m_fullname, new JsonHttpResponseHandler() {
+    public void update() { update(null); }
+    public void update(Runnable updateCallback) {
+        m_api.getRequest(ModuleHandler.API_ENDPOINT, m_fullname, new Callback() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                try { updateValues(response); }
-                catch (JSONException ex) {
-                    Logger.getInstance().log(
-                        Logger.Type.ERROR,
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                if (updateCallback != null) updateCallback.run();
+                Logger.getInstance().logError(
+                    "Failed to update api element '" + m_fullname + "' " +
+                    "because the remote server did not respond ",
+                    this, e
+                );
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (updateCallback != null) updateCallback.run();
+                try {
+                    // TODO: do more safety checks
+                    JSONObject jsonResponse = new JSONObject(response.body().string());
+                    updateValues(jsonResponse);
+                } catch (JSONException ex) {
+                    Logger.getInstance().logError(
                         String.format(
                             "Malformed data received while trying to update an api chain @ %s " +
                             "exception is: %s \n" +
                             "This might indicate that the server is either not running the latest version of servant or " +
                             "is not running servant at all on that port.",
                             m_fullname,
-                            response.toString(),
                             ex.toString()
                         ),
                         m_fullname, ex
                     );
                 }
             }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                Logger.getInstance().logError(
-                    "Failed to update api element '" + m_fullname + "' " +
-                    "because the remote server issued an error response in the form of a JSON object. " +
-                    "Error code: " + statusCode,
-                    this, throwable
-                );
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                Logger.getInstance().logError(
-                    "Failed to update api element '" + m_fullname + "' " +
-                    "because the remote server issued an error response in the form of a JSON array. " +
-                    "Error code: " + statusCode,
-                    this, throwable
-                );
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-                Logger.getInstance().logError(
-                    "Failed to update api element '" + m_fullname + "' " +
-                    "because the remote server issued an error response in the form of a string. " +
-                    "This indicates that servant might not be installed on the remote server. " +
-                    "Error code: " + statusCode,
-                    this, throwable
-                );
-            }
         });
     }
 
     public Collection<ChildType> getChilds() { return m_childs.values(); }
-    public ChildType getChildById(String id) { return m_childs.get(id); }
+    public ChildType getChildById(String id) { return m_childs.get(id);  }
 
     public ChildType getChildByName(String name) {
         for (ChildType elem : m_childs.values()) {
@@ -164,18 +147,20 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         removeAll(currentIds);
     }
 
-    abstract ChildType instanciateChild(JSONObject json) throws JSONException;
+    protected abstract ChildType instanciateChild(JSONObject json) throws JSONException;
 
     public void addListener(ApiListener listener)    { getObservers().add(listener);    }
     public void removeListener(ApiListener listener) { getObservers().remove(listener); }
 
-    ChildType addChild(String id, ChildType child) {
+    // these methods need to be synchronized since they get called by the async http handler,
+    // modify the map and i im not a big fan of race conditions
+    synchronized ChildType addChild(String id, ChildType child) {
         notifyAdd(child);
         m_childs.put(id, child);
         return child;
     }
 
-    void removeAll(Collection<String> ids) {
+    synchronized void removeAll(Collection<String> ids) {
         for (String id : ids) notifyRemove(m_childs.remove(id));
     }
 
