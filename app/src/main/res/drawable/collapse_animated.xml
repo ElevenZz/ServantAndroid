@@ -4,6 +4,5 @@
 
     <target
         android:animation="@anim/animation_collapse"
-        android:name="group"
-    />
+        android:name="group" />
 </animated-vector>

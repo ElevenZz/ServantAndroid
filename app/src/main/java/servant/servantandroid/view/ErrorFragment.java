@@ -51,7 +51,7 @@ public class ErrorFragment extends DialogFragment {
         detailsView.setMovementMethod(new ScrollingMovementMethod());
 
         return new AlertDialog.Builder(getActivity()).setView(errorDialogLayout)
-            .setNeutralButton(R.string.ok, (dialog, id) -> dialog.dismiss())
+            .setPositiveButton(R.string.ok, (dialog, id) -> dialog.dismiss())
             .create();
     }
 }

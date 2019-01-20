@@ -12,7 +12,6 @@ public class ExecuteAsync {
 
     public static void execute(Runnable runnable) {
         check();
-
         m_pool.execute(runnable);
     }
 

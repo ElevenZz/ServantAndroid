@@ -4,6 +4,5 @@
 
     <target
         android:animation="@anim/animation_expand"
-        android:name="group"
-    />
+        android:name="group" />
 </animated-vector>

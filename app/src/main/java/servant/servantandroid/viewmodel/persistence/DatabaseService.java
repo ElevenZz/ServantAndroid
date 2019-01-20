@@ -19,6 +19,7 @@ import servant.servantandroid.internal.ServantInstance;
 import servant.servantandroid.internal.api_mirror.ApiElement;
 import servant.servantandroid.internal.api_mirror.ApiListener;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
+import servant.servantandroid.internal.api_mirror.parameters.ParameterFactory;
 import servant.servantandroid.util.ExecuteAsync;
 
 // singleton pattern like advised by android:
@@ -27,7 +28,7 @@ public class DatabaseService {
     private static DatabaseService instance;
 
     public static DatabaseService getInstance() { return instance; }
-    public static void initialize(Context ctx) { instance = new DatabaseService(ctx); }
+    public static void initialize(Context ctx)  { instance = new DatabaseService(ctx); }
 
     private LocalDatabase m_db;
 
@@ -72,12 +73,13 @@ public class DatabaseService {
         ExecuteAsync.execute(() -> {
             for(InstanceEntity entity : m_db.instanceDao().getAllInstances()) {
                 callback.accept(
+                    // i need to help Gson out since it isn't able to distinguish my parameter types
                     new GsonBuilder()
                         .registerTypeAdapter(
                             BaseParameter.class,
                             (JsonDeserializer<BaseParameter>)(json, type, ctx) ->
-                                ctx.deserialize(json, BaseParameter.getRegistry().resolve(
-                                    json.getAsJsonObject().get("m_id").getAsString()
+                                ctx.deserialize(json, ParameterFactory.getInstance().resolve(
+                                    json.getAsJsonObject().get("m_type").getAsString()
                                 ))
                         )
                         .create()
