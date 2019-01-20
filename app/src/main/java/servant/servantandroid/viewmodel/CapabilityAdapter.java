@@ -1,27 +1,40 @@
 package servant.servantandroid.viewmodel;
 
-import androidx.activity.ComponentActivity;
+import android.graphics.drawable.Animatable;
+
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import servant.servantandroid.R;
-import servant.servantandroid.databinding.HeaderLayoutBinding;
+import servant.servantandroid.databinding.CapabilityLayoutBinding;
 import servant.servantandroid.internal.api_mirror.Capability;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
+import servant.servantandroid.view.ResultFragment;
 
 public class CapabilityAdapter
-    extends ApiAdapter<HeaderLayoutBinding, Capability, BaseParameter, BaseParameterAdapter> {
+    extends ApiAdapter<CapabilityLayoutBinding, Capability, BaseParameter, BaseParameterAdapter> {
 
-    CapabilityAdapter(ComponentActivity ctx, Capability capability) { super(ctx, capability); }
+    CapabilityAdapter(FragmentActivity ctx, Capability capability) { super(ctx, capability); }
 
     @Override
     protected BaseParameterAdapter instanciateChildAdapter(BaseParameter child) {
-        return BaseParameterAdapter.getParamtypeHandler(child.getClass()).apply(m_context, child);
+        return BaseParameterAdapter.getParamtypeConstructor(child.getClass()).apply(m_context, child);
     }
 
-    @Override public int getLayout() { return R.layout.header_layout; }
+    @Override public int getLayout() { return R.layout.capability_layout; }
 
     @Override
-    public void bind(@NonNull HeaderLayoutBinding viewBinding, int position) {
-        bindExpandIcon(viewBinding.icon);
+    public void bind(@NonNull CapabilityLayoutBinding viewBinding, int position) {
+        bindExpandIcon(viewBinding.iconExpand);
         viewBinding.title.setText(m_element.getName());
+        viewBinding.iconExecute.setImageResource(R.drawable.execute_animated);
+        viewBinding.iconExecute.setOnClickListener((view) -> {
+            ((Animatable)viewBinding.iconExecute.getDrawable()).start();
+            m_element.execute((res) -> {
+                ((Animatable)viewBinding.iconExecute.getDrawable()).stop();
+                if(res != null) ResultFragment.showResultFragment(
+                    m_context.getSupportFragmentManager(), res, m_element
+                );
+            });
+        });
     }
 }
