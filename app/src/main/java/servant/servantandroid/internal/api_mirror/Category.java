@@ -16,7 +16,7 @@ public class Category extends ApiElement<Capability> {
     }
 
     @Override
-    Capability instanciateChild(JSONObject json) {
+    protected Capability instanciateChild(JSONObject json) {
         return new Capability(json, m_api);
     }
 }
