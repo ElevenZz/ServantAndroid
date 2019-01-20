@@ -4,6 +4,7 @@ import android.view.View;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import servant.servantandroid.R;
@@ -23,7 +24,7 @@ public class InstanceAdapter extends ApiAdapter<HeaderLayoutBinding, ModuleHandl
     private MutableLiveData<ModuleAdapter> m_selectedModule;
     private ServantInstance m_instance;
 
-    InstanceAdapter(ComponentActivity ctx, ServantInstance instance, MutableLiveData<ModuleAdapter> selected) {
+    InstanceAdapter(FragmentActivity ctx, ServantInstance instance, MutableLiveData<ModuleAdapter> selected) {
         super(ctx, instance.getModuleHandler());
 
         m_selectedModule = selected;

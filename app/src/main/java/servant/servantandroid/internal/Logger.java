@@ -6,11 +6,12 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * an overridable base logger in the singleton pattern
+ * an overridable base logger utilizing the singleton pattern
  */
 public class Logger {
 
     public enum Type { DEBUG, INFO, WARNING, ERROR }
+    protected Type m_logLevel = Type.DEBUG;
 
     // setting the default logger
     private static Logger instance = new Logger();
@@ -24,7 +25,8 @@ public class Logger {
      *               most likely a this or string literal describing the current object
      */
     public void log(Logger.Type type, String message, Object origin, Throwable error) {
-        System.out.println(formatLine(type, message, origin));
+        if(type.ordinal() >= m_logLevel.ordinal())
+            System.out.println(formatLine(type, message, origin));
     }
 
     public final void log(Logger.Type type, String message, Object origin) {

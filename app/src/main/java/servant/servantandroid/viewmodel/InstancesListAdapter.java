@@ -12,6 +12,7 @@ import java.util.Map;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 import servant.servantandroid.R;
@@ -23,10 +24,10 @@ public class InstancesListAdapter extends Section {
     // BiMap would be cool here but i don't want more deps
     private Map<InstanceAdapter, ServantInstance> m_instances;
     private TouchCallback m_touchCallback;
-    private ComponentActivity m_context;
+    private FragmentActivity m_context;
     private MutableLiveData m_selectedModule;
 
-    public InstancesListAdapter(ComponentActivity ctx, MutableLiveData<ModuleAdapter> selectedModule) {
+    public InstancesListAdapter(FragmentActivity ctx, MutableLiveData<ModuleAdapter> selectedModule) {
         m_instances = new HashMap<>();
         m_context = ctx;
         m_selectedModule = selectedModule;

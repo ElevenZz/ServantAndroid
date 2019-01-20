@@ -17,4 +17,9 @@
     <string name="error_details">Error Details:</string>
     <string name="saved_viewmodel">viewmodel</string>
     <string name="remove_approval">do you really want to delete instance "%s"?</string>
+    <string name="result_title">Capability Result</string>
+    <string name="result_name">capability: </string>
+    <string name="result_fullname">fullname: </string>
+    <string name="result_type">result:</string>
+    <string name="result_message">message: </string>
 </resources>

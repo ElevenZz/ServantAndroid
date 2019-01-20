@@ -13,6 +13,7 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 import servant.servantandroid.R;
 import servant.servantandroid.databinding.ActivityStartBinding;
@@ -28,7 +29,7 @@ public class ModuleAdapter extends ApiAdapter<ModuleItemBinding, Module, Categor
 
     private MutableLiveData<ModuleAdapter> m_selectedModule;
 
-    ModuleAdapter(ComponentActivity ctx, Module module, MutableLiveData<ModuleAdapter> selected) {
+    ModuleAdapter(FragmentActivity ctx, Module module, MutableLiveData<ModuleAdapter> selected) {
         super(ctx, module);
         m_selectedModule = selected;
     }

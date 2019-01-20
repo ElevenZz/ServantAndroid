@@ -1,6 +1,5 @@
 package servant.servantandroid.internal.api_mirror;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,7 +22,7 @@ public class Module extends ApiElement<Category> {
     }
 
     @Override
-    Category instanciateChild(JSONObject json) {
+    protected Category instanciateChild(JSONObject json) {
         return new Category(json, m_api);
     }
 
