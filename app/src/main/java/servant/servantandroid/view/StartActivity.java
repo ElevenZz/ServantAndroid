@@ -19,9 +19,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import servant.servantandroid.R;
 import servant.servantandroid.databinding.ActivityStartBinding;
 import servant.servantandroid.internal.Logger;
+import servant.servantandroid.internal.api_mirror.Module;
 import servant.servantandroid.viewmodel.InstancesListAdapter;
 import servant.servantandroid.viewmodel.ModuleAdapter;
 import servant.servantandroid.viewmodel.persistence.DatabaseService;
@@ -33,7 +35,8 @@ import android.widget.EditText;
 import java.net.MalformedURLException;
 
 public class StartActivity
-    extends AppCompatActivity implements AddServerFragment.AddServerListener {
+    extends AppCompatActivity
+    implements AddServerFragment.AddServerListener, SwipeRefreshLayout.OnRefreshListener {
 
     private InstancesListAdapter m_instances;
     private ActivityStartBinding m_binding;
@@ -48,6 +51,7 @@ public class StartActivity
 
         Toolbar toolbar = m_binding.appbar.toolbar;
         setSupportActionBar(toolbar);
+        m_binding.appbar.content.swipeLayout.setOnRefreshListener(this);
 
         Logger.setLogger(new UILogger(getSupportFragmentManager()));
         Context ctx = getApplicationContext();
@@ -87,8 +91,11 @@ public class StartActivity
         instancesView.setAdapter(instancesAdapter);
         instancesView.setLayoutManager(new LinearLayoutManager(this));
 
+        // TODO: display currently selected module in toolbar
         m_selectedModule.observe(this, (module) ->
-            runOnUiThread(() -> categoriesAdapter.update(module.getCategories()))
+            runOnUiThread(() -> {
+                categoriesAdapter.update(module.getCategories());
+            })
         );
 
         categoriesView.setAdapter(categoriesAdapter);
@@ -151,5 +158,11 @@ public class StartActivity
                 e.toString()
             );
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        if(m_selectedModule.getValue() != null) m_selectedModule.getValue()
+            .update(() -> m_binding.appbar.content.swipeLayout.setRefreshing(false));
     }
 }
