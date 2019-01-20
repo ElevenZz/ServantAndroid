@@ -1,41 +1,56 @@
 package servant.servantandroid.internal;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.ResponseHandlerInterface;
-
-import org.json.JSONObject;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
 public class ApiService {
-    // using an async client here as to not stop the gui
-    // and allow multiple capabilities to be executed simultaneously
-    private static AsyncHttpClient client = new AsyncHttpClient();
+
+    private static final MediaType JSON  = MediaType.get("application/json; charset=utf-8");
     private URL m_remoteHost;
 
     ApiService(String remoteHost) throws MalformedURLException {
         m_remoteHost = new URL(remoteHost);
     }
 
-    public void getRequest(String apiEndpoint, String fullname, ResponseHandlerInterface handler) {
+    public void getRequest(String apiEndpoint, String fullname, Callback callback) {
         // string interpolation would be cool here but eh
         String absoluteUrl = String.format("%s/%s/%s", m_remoteHost, apiEndpoint, fullname);
-        client.get(absoluteUrl, handler);
+        Request req = new Request.Builder()
+            .url(absoluteUrl)
+            .build();
+
+        OkSingleton.getInstance().newCall(req).enqueue(callback);
     }
 
-    public void postRequest(String apiEndpoint, String fullname, JSONObject data, ResponseHandlerInterface handler) {
+    public void postRequest(String apiEndpoint, String fullname, String data, Callback callback) {
         // string interpolation would be cool here but eh
         String absoluteUrl = String.format("%s/%s/%s", m_remoteHost, apiEndpoint, fullname);
 
-        // put our json data in a RequestParams object and set sum options
-        RequestParams params = new RequestParams(data.toString());
-        params.setUseJsonStreamer(true);
-        params.setContentEncoding(RequestParams.APPLICATION_JSON);
+        RequestBody body = RequestBody.create(JSON, data);
+        Request request = new Request.Builder()
+                .url(absoluteUrl)
+                .post(body)
+                .build();
 
-        client.post(absoluteUrl, params, handler);
+        OkSingleton.getInstance().newCall(request).enqueue(callback);
     }
 
     public String getRemoteHost() { return m_remoteHost.getHost(); }
+}
+
+// https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+class OkSingleton extends OkHttpClient {
+    private static class LazyHolder {
+        private static final OkSingleton instance = new OkSingleton();
+    }
+
+    public static OkSingleton getInstance() {
+        return LazyHolder.instance;
+    }
 }
