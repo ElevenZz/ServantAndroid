@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import servant.servantandroid.R;
 import servant.servantandroid.internal.api_mirror.ApiElement;
 import servant.servantandroid.internal.api_mirror.ApiListener;
@@ -28,13 +29,13 @@ public abstract class ApiAdapter<
     implements ApiListener<ApiChildType>, ExpandableItem {
 
     ExpandableGroup m_expandToggle;
-    ComponentActivity m_context;
+    FragmentActivity m_context;
     // the thing were holding
     ApiElementType m_element;
     // link api element to adapter
     HashMap<ApiChildType, ExpandableGroup> m_childs;
 
-    ApiAdapter(ComponentActivity ctx, ApiElementType element) {
+    ApiAdapter(FragmentActivity ctx, ApiElementType element) {
         m_childs  = new HashMap<>();
         m_context = ctx;
         m_element = element;
@@ -61,8 +62,11 @@ public abstract class ApiAdapter<
         );
     }
 
-    ExpandableGroup getGroup() { return m_expandToggle; }
-    Collection<ExpandableGroup> getChilds() { return m_childs.values(); }
+    public void update(Runnable callback) { m_element.update(callback); }
+
+    public ExpandableGroup getGroup()   { return m_expandToggle; }
+    public ApiElementType  getElement() { return m_element;      }
+    public Collection<ExpandableGroup> getChilds() { return m_childs.values(); }
 
     @Override
     public void onAddChild(ApiChildType item) {
