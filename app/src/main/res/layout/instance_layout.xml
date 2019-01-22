@@ -37,13 +37,21 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="?android:attr/textColorSecondary"
-                    tools:text="topkek"
-                />
+                    tools:text="topkek" />
 
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/icon"
+                android:id="@+id/icon_refresh"
+                android:padding="8dp"
+                app:srcCompat="@drawable/refresh"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/icon_expand"
                 android:padding="8dp"
                 app:srcCompat="@drawable/expand"
                 android:layout_gravity="center_vertical"

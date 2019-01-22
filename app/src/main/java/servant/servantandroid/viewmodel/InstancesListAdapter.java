@@ -83,6 +83,11 @@ public class InstancesListAdapter extends Section {
         DatabaseService.getInstance().insertServantInstance(instance);
     }
 
+    public void saveInstances() {
+        for(ServantInstance inst : m_instances.values())
+            DatabaseService.getInstance().updateServantInstance(inst);
+    }
+
     private void addInstance(ServantInstance instance) {
         InstanceAdapter adapter  = new InstanceAdapter(m_context, instance, m_selectedModule);
         ExpandableGroup group    = new ExpandableGroup(adapter);
