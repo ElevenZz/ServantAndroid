@@ -23,7 +23,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import servant.servantandroid.R;
 import servant.servantandroid.databinding.ActivityStartBinding;
 import servant.servantandroid.internal.Logger;
-import servant.servantandroid.internal.api_mirror.Module;
 import servant.servantandroid.viewmodel.InstancesListAdapter;
 import servant.servantandroid.viewmodel.ModuleAdapter;
 import servant.servantandroid.viewmodel.persistence.DatabaseService;
@@ -161,8 +160,15 @@ public class StartActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        m_instances.saveInstances();
+    }
+
+    @Override
     public void onRefresh() {
         if(m_selectedModule.getValue() != null) m_selectedModule.getValue()
             .update(() -> m_binding.appbar.content.swipeLayout.setRefreshing(false));
+        m_instances.saveInstances();
     }
 }

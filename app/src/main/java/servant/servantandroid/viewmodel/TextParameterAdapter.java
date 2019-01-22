@@ -3,12 +3,9 @@ package servant.servantandroid.viewmodel;
 import android.text.Editable;
 import android.text.TextWatcher;
 
-import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
-import androidx.databinding.Observable;
 import androidx.fragment.app.FragmentActivity;
 import servant.servantandroid.R;
-import servant.servantandroid.databinding.HeaderLayoutBinding;
 import servant.servantandroid.databinding.TextParameterLayoutBinding;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
 import servant.servantandroid.internal.api_mirror.parameters.TextParameter;

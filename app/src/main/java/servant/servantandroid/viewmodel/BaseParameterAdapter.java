@@ -2,10 +2,8 @@ package servant.servantandroid.viewmodel;
 
 import java.util.HashMap;
 
-import androidx.activity.ComponentActivity;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
-import servant.servantandroid.databinding.HeaderLayoutBinding;
 import servant.servantandroid.internal.api_mirror.ApiElement;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
 import servant.servantandroid.internal.api_mirror.parameters.TextParameter;

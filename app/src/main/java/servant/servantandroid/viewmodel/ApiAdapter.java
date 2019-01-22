@@ -7,7 +7,6 @@ import com.xwray.groupie.ExpandableGroup;
 import com.xwray.groupie.ExpandableItem;
 import com.xwray.groupie.databinding.BindableItem;
 
-import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.databinding.ViewDataBinding;
