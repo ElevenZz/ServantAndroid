@@ -4,21 +4,30 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 
 import servant.servantandroid.R;
+import servant.servantandroid.databinding.ErrorDialogBinding;
 
 public class ErrorFragment extends DialogFragment {
-
+    // constants for the argument names, just a safety measure
     private static final String ERROR_ARG   = "error";
     private static final String DETAILS_ARG = "details";
 
-    public static void showErrorFragment(FragmentManager manager, String error, String details) {
+    /**
+     * sets all the arguments and opens the dialog.
+     * android sometimes re-instanciates fragments via reflection
+     * so the member variables and references are lost
+     * which also means the arguments can only be primitive
+     * @param manager the fragment manager from the main activity
+     * @param error error message to be displayed
+     * @param details a more detailed error description [optional]
+     */
+    static void showErrorFragment(FragmentManager manager, String error, String details) {
         ErrorFragment fragment = new ErrorFragment();
         Bundle arguments = new Bundle();
         arguments.putString(ERROR_ARG, error);
@@ -40,17 +49,19 @@ public class ErrorFragment extends DialogFragment {
         error   = (error   == null? getString(R.string.not_available) : error);
         details = (details == null? getString(R.string.not_available) : details);
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View errorDialogLayout = inflater.inflate(R.layout.error_dialog, null);
+        ErrorDialogBinding binding = DataBindingUtil.inflate(
+            LayoutInflater.from(getContext()),
+            R.layout.error_dialog, null, false
+        );
 
-        ((TextView)errorDialogLayout.findViewById(R.id.error_description)).setText(error);
-        ((TextView)errorDialogLayout.findViewById(R.id.error_details)).setText(details);
+        binding.errorDescription.setText(error);
+        binding.errorDetails.setText(details);
 
-        // make the error details scrollable and use as closure in the neutral button lambda
-        final TextView detailsView = errorDialogLayout.findViewById(R.id.error_details);
-        detailsView.setMovementMethod(new ScrollingMovementMethod());
+        // make the error details scrollable
+        binding.errorDetails.setMovementMethod(new ScrollingMovementMethod());
 
-        return new AlertDialog.Builder(getActivity()).setView(errorDialogLayout)
+        return new AlertDialog.Builder(getActivity())
+            .setView(binding.getRoot())
             .setPositiveButton(R.string.ok, (dialog, id) -> dialog.dismiss())
             .create();
     }

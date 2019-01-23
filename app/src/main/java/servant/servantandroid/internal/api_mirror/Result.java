@@ -3,6 +3,9 @@ package servant.servantandroid.internal.api_mirror;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * representing the result of a capability execution
+ */
 public class Result {
     public enum Type { SUCCESS, ERROR }
 

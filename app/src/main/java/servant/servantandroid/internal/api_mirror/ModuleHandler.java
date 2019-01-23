@@ -4,7 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import servant.servantandroid.internal.ApiService;
-import servant.servantandroid.internal.ServantInstance;
 
 public class ModuleHandler extends ApiElement<Module> {
     static final String API_ENDPOINT = "modules";

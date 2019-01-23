@@ -21,8 +21,11 @@ import okhttp3.internal.annotations.EverythingIsNonNull;
 import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.Logger;
 
+/**
+ * the base type of all api elements
+ * @param <ChildType> the type of the child elements
+ */
 public abstract class ApiElement<ChildType extends ApiElement> {
-
     // empty in case of root element
     protected String m_fullname;
     protected String m_name;
@@ -40,9 +43,7 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         return m_observers;
     }
 
-    ApiElement(ApiService service) {
-        m_api = service;
-    }
+    ApiElement(ApiService service) { m_api = service; }
 
     /**
      * create a new api element by parsing the json object
@@ -68,6 +69,9 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         }
     }
 
+    /**
+     * overload acting as optional parameter
+     */
     public void update() { update(null); }
     public void update(Runnable updateCallback) {
         m_api.getRequest(ModuleHandler.API_ENDPOINT, m_fullname, new Callback() {
@@ -147,8 +151,18 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         removeAll(currentIds);
     }
 
+    /**
+     * instantiate new child. used to give more control over initialization
+     * @param json json representing element
+     * @return the new element
+     * @throws JSONException if json is invalid
+     */
     protected abstract ChildType instanciateChild(JSONObject json) throws JSONException;
 
+    /**
+     * add observer to listen for changes in this instance
+     * @param listener object implementing ApiListener interface
+     */
     public void addListener(ApiListener listener)    { getObservers().add(listener);    }
     public void removeListener(ApiListener listener) { getObservers().remove(listener); }
 
@@ -160,6 +174,10 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         return child;
     }
 
+    /**
+     * convenience method to remove all childs
+     * @param ids list of ids to remove from the map
+     */
     synchronized void removeAll(Collection<String> ids) {
         for (String id : ids) notifyRemove(m_childs.remove(id));
     }

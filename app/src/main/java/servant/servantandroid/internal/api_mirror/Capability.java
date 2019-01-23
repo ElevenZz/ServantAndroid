@@ -11,7 +11,6 @@ import androidx.core.util.Consumer;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.Logger;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
@@ -21,8 +20,14 @@ public class Capability extends ApiElement<BaseParameter> {
 
     Capability(JSONObject obj, ApiService service) { super(obj, service); }
 
+    /**
+     * actually sends the execution request to the server
+     * callback will be called after execution is done
+     * @param callback called with a result instance after execution is done
+     */
     public void execute(Consumer<Result> callback) {
         try {
+            // serialize child parameters
             JSONArray params = new JSONArray();
             for(BaseParameter param : getChilds())
                 params.put(param.serialize());
@@ -40,23 +45,19 @@ public class Capability extends ApiElement<BaseParameter> {
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    ResponseBody body = response.body();
                     Result result = null;
-                    try {
+                    try(Response res = response) {
                         // maybe i should replace the default JSON lib
                         // with something stream based to make this more efficient
                         // also the api sucks pretty bad overall so i might actually do that
-                        result = new Result(new JSONObject(body.string()));
+                        result = new Result(new JSONObject(res.body().string()));
                     } catch (JSONException e) {
                         Logger.getInstance().logError(
                             "Capability " + m_fullname + " return malformed result data",
                             this, e
                         );
                     }
-                    finally {
-                        body.close();
-                        callback.accept(result);
-                    }
+                    finally { callback.accept(result); }
                 }
             });
         } catch (JSONException e) {
@@ -67,14 +68,13 @@ public class Capability extends ApiElement<BaseParameter> {
         }
     }
 
-    @Override
-    public void updateValues(JSONObject data) throws JSONException {
+    @Override public void updateValues(JSONObject data) throws JSONException {
         super.updateValues(data);
         notifyUpdate();
     }
 
-    @Override
-    protected BaseParameter instanciateChild(JSONObject json) throws JSONException {
+    // construct parameter by type
+    @Override protected BaseParameter instanciateChild(JSONObject json) throws JSONException {
         return ParameterFactory.getInstance().constructParameter(
             json.getString("type"), json, m_api
         );

@@ -14,7 +14,11 @@ import servant.servantandroid.databinding.ResultLayoutBinding;
 import servant.servantandroid.internal.api_mirror.Capability;
 import servant.servantandroid.internal.api_mirror.Result;
 
+/**
+ * a dialog displaying the results of a capability execution
+ */
 public class ResultFragment extends DialogFragment {
+    // constants for the argument names, just a safety measure
     private static final String MESSAGE_ARG = "result_message";
     private static final String TYPE_ARG    = "result_type";
 

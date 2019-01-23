@@ -41,20 +41,25 @@ public class StartActivity
     private ActivityStartBinding m_binding;
     private MutableLiveData<ModuleAdapter> m_selectedModule;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+
+        // setup mutable live data for the selected module
+        // acts as a UI bridge between the drawer and the main view
         m_selectedModule = new MutableLiveData<>();
+        // using databinding for UI access instead of the clunky findViewById
         m_binding = DataBindingUtil.setContentView(this, R.layout.activity_start);
 
         Toolbar toolbar = m_binding.appbar.toolbar;
         setSupportActionBar(toolbar);
         m_binding.appbar.content.swipeLayout.setOnRefreshListener(this);
 
+        // override static logger singleton instance with a UI logger
+        // which displays a dialog in case of an error
         Logger.setLogger(new UILogger(getSupportFragmentManager()));
-        Context ctx = getApplicationContext();
-        DatabaseService.initialize(ctx);
+        // init database. lazy initialization would be preferable
+        // but i need the activity context
+        DatabaseService.initialize(getApplicationContext());
         m_instances = new InstancesListAdapter(this, m_selectedModule);
 
         FloatingActionButton fab = m_binding.appbar.fab;
@@ -72,12 +77,17 @@ public class StartActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        // the stuff in the drawer
         final RecyclerView instancesView  = m_binding.drawerContent.instancesList;
+        // the stuff in the main view
         final RecyclerView categoriesView = m_binding.appbar.content.categoriesList;
 
+        // setup groupie adapters for both views
         GroupAdapter instancesAdapter  = new GroupAdapter();
         GroupAdapter categoriesAdapter = new GroupAdapter();
 
+        // a listener for all UI adapters.
+        // executes click method if adapter implements ClickableItem interface
         OnItemClickListener listener = (item, view) -> {
             if(item instanceof ClickableItem) { ((ClickableItem)item).onClick(view); }
         };
@@ -92,19 +102,17 @@ public class StartActivity
 
         // TODO: display currently selected module in toolbar
         m_selectedModule.observe(this, (module) ->
-            runOnUiThread(() -> {
-                categoriesAdapter.update(module.getCategories());
-            })
+            runOnUiThread(() -> categoriesAdapter.update(module.getCategories()))
         );
 
         categoriesView.setAdapter(categoriesAdapter);
         categoriesView.setLayoutManager(new LinearLayoutManager(this));
 
+        // naive swipe to delete implementation
         new ItemTouchHelper(m_instances.getTouchCallback()).attachToRecyclerView(instancesView);
     }
 
-    @Override
-    public void onBackPressed() {
+    @Override public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -113,15 +121,13 @@ public class StartActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.start, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -135,8 +141,11 @@ public class StartActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onAddServerClicked(DialogFragment dialog) {
+    /**
+     * listener callback from the add server dialog
+     * @param dialog the dialog this was called from
+     */
+    @Override public void onAddServerClicked(DialogFragment dialog) {
         EditText remoteHost = dialog.getDialog().findViewById(R.id.remote_host);
         EditText servername = dialog.getDialog().findViewById(R.id.servername);
         try {
@@ -159,14 +168,18 @@ public class StartActivity
         }
     }
 
-    @Override
-    protected void onPause() {
+    /**
+     * gets called when android decides it wants to pause to activity
+     */
+    @Override protected void onPause() {
         super.onPause();
         m_instances.saveInstances();
     }
 
-    @Override
-    public void onRefresh() {
+    /**
+     * overrides OnRefreshListener. gets called when the user swipes upwards
+     */
+    @Override public void onRefresh() {
         if(m_selectedModule.getValue() != null) m_selectedModule.getValue()
             .update(() -> m_binding.appbar.content.swipeLayout.setRefreshing(false));
         m_instances.saveInstances();

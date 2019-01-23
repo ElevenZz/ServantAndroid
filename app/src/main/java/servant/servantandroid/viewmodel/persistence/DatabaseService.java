@@ -69,11 +69,15 @@ public class DatabaseService {
         ExecuteAsync.execute(() -> m_db.instanceDao().delete(instancesToEntities(instances)));
     }
 
+    /**
+     * loads all instances from the cache and calls the callback for every single one
+     * @param callback the callback to be called for every instance
+     */
     public void getServantInstances(Consumer<ServantInstance> callback) {
         ExecuteAsync.execute(() -> {
             for(InstanceEntity entity : m_db.instanceDao().getAllInstances()) {
                 callback.accept(
-                    // i need to help Gson out since it isn't able to distinguish my parameter types
+                    // i need to help Gson out since it isn't able to distinguish my abstract parameter types
                     new GsonBuilder()
                         .registerTypeAdapter(
                             BaseParameter.class,

@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * an overridable base logger utilizing the singleton pattern
+ * an overridable base logger utilizing dependency injection
  */
 public class Logger {
 
@@ -41,7 +41,7 @@ public class Logger {
         log(Type.ERROR, message, origin, error);
     }
 
-    public String formatLine(Logger.Type type, String message, Object origin) {
+    protected String formatLine(Logger.Type type, String message, Object origin) {
         return String.format(
             "[%s][%s][%s]:::|%s",
             new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ROOT).format(new Date()),
@@ -61,6 +61,6 @@ public class Logger {
         instance = logger;
     }
 
-    // prevent instantiation of this singleton
+    // prevent instantiation outside this class
     protected Logger() {}
 }

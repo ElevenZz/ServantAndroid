@@ -9,15 +9,28 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+/**
+ * class for sending api requests. wraps underlying lib so it can easily be exchanged
+ */
 public class ApiService {
-
-    private static final MediaType JSON  = MediaType.get("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private URL m_remoteHost;
 
+    /**
+     * checks url for validity
+     * @param remoteHost string representing a url
+     * @throws MalformedURLException when the url could not be parsed
+     */
     ApiService(String remoteHost) throws MalformedURLException {
         m_remoteHost = new URL(remoteHost);
     }
 
+    /**
+     * perform simple GET request asynchronously
+     * @param apiEndpoint the api endpoint as first part of the url
+     * @param fullname full api element name. basically rest of the url
+     * @param callback called when the request is done
+     */
     public void getRequest(String apiEndpoint, String fullname, Callback callback) {
         // string interpolation would be cool here but eh
         String absoluteUrl = String.format("%s/%s/%s", m_remoteHost, apiEndpoint, fullname);
@@ -28,6 +41,12 @@ public class ApiService {
         OkSingleton.getInstance().newCall(req).enqueue(callback);
     }
 
+    /**
+     * perform simple POST request
+     * @param apiEndpoint the api endpoint as first part of the url
+     * @param fullname full api element name. basically rest of the url
+     * @param callback called when the request is done
+     */
     public void postRequest(String apiEndpoint, String fullname, String data, Callback callback) {
         // string interpolation would be cool here but eh
         String absoluteUrl = String.format("%s/%s/%s", m_remoteHost, apiEndpoint, fullname);

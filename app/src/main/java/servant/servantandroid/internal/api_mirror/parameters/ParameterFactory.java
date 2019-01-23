@@ -3,14 +3,17 @@ package servant.servantandroid.internal.api_mirror.parameters;
 import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import servant.servantandroid.internal.ApiService;
-import servant.servantandroid.internal.api_mirror.Capability;
 
-// TODO: do this in a less csharpy way
+/**
+ * parameter types get mapped with their type string here.
+ * this could be improved by building an annotation processor
+ * and letting the annotation provide the type name
+ * this is basically the preparation until i have time to do that
+ */
 public class ParameterFactory {
     // https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
     private static class LazyHolder {
@@ -53,7 +56,7 @@ public class ParameterFactory {
         return instance;
     }
 
-    ParameterFactory() {
+    private ParameterFactory() {
         // register parameters
         m_parameterTypes.put("text", TextParameter.class);
     }

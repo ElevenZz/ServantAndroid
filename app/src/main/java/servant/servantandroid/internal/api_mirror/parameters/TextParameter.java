@@ -6,6 +6,9 @@ import org.json.JSONObject;
 import servant.servantandroid.internal.ApiService;
 import servant.servantandroid.internal.api_mirror.Capability;
 
+/**
+ * a parameter containing only a string value
+ */
 public class TextParameter extends BaseParameter {
     public TextParameter(JSONObject parameter, ApiService service) { super(parameter, service); }
 
