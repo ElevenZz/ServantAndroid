@@ -160,8 +160,8 @@ public class StartActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         m_instances.saveInstances();
     }
 
