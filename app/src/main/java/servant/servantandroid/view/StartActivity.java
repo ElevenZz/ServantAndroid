@@ -39,6 +39,8 @@ public class StartActivity
 
     private InstancesListAdapter m_instances;
     private ActivityStartBinding m_binding;
+    // an observable holder getting updated when the user clicks on a module
+    // the observer in the main activity updates the content view with the module categories
     private MutableLiveData<ModuleAdapter> m_selectedModule;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
