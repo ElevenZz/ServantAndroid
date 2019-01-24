@@ -3,6 +3,7 @@
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" value="$USER_HOME$/Documents/servantdoc" />
     <option name="OPTION_SCOPE" value="private" />
+    <option name="OPTION_LINK_TO_JDK_DOCS" value="true" />
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />

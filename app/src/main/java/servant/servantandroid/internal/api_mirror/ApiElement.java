@@ -26,18 +26,41 @@ import servant.servantandroid.internal.Logger;
  * @param <ChildType> the type of the child elements
  */
 public abstract class ApiElement<ChildType extends ApiElement> {
-    // empty in case of root element
+    /**
+     * fullname of the element as provided by the server
+     * will be used as the url to access the element
+     */
     protected String m_fullname;
+
+    /**
+     * name of the element as provided by the server
+     */
     protected String m_name;
+
+    /**
+     * id of the element as provided by the server
+     */
     protected String m_id;
 
+    /**
+     * an instance of the webservice api to make web requests
+     */
     ApiService m_api;
 
-    // map for faster/easier access. String is the element id
+    /**
+     * map for faster/easier access. String is the element id
+     */
     private Map<String, ChildType> m_childs = new LinkedHashMap<>();
+
+    /**
+     * transient list of observers so it doesn't get serialized
+     */
     private transient List<ApiListener<ChildType>> m_observers;
 
-    // forced lazy initialization to make this serialization safe
+    /**
+     * forced lazy initialization to make this serialization safe
+     * @return list of observers
+     */
     private List<ApiListener<ChildType>> getObservers() {
         if(m_observers == null) m_observers = new ArrayList<>();
         return m_observers;
@@ -73,6 +96,12 @@ public abstract class ApiElement<ChildType extends ApiElement> {
      * overload acting as optional parameter
      */
     public void update() { update(null); }
+
+    /**
+     * send an api request to update this element
+     * callback gets called after update
+     * @param updateCallback called when the update request is done
+     */
     public void update(Runnable updateCallback) {
         m_api.getRequest(ModuleHandler.API_ENDPOINT, m_fullname, new Callback() {
             @Override
@@ -120,7 +149,11 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         return null;
     }
 
-    // this will get called by the public update method
+    /**
+     * gets called by the update method to set the json values from the response
+     * @param data JSON representing this instance
+     * @throws JSONException in case of a malformed JSON
+     */
     public void updateValues(JSONObject data) throws JSONException {
         m_fullname = data.getString("fullname");
         m_name     = data.getString("name");
@@ -182,14 +215,25 @@ public abstract class ApiElement<ChildType extends ApiElement> {
         for (String id : ids) notifyRemove(m_childs.remove(id));
     }
 
+    /**
+     * notifies all observer that a child has been added to this instance
+     * @param item added child
+     */
     private void notifyAdd(ChildType item) {
         for(ApiListener<ChildType> observer : getObservers()) observer.onAddChild(item);
     }
 
+    /**
+     * notifies all observer that a child has been removed from this instance
+     * @param item removed child
+     */
     private void notifyRemove(ChildType item) {
         for(ApiListener<ChildType> observer : getObservers()) observer.onRemoveChild(item);
     }
 
+    /**
+     * notifies all observer that a this instance was modified
+     */
     protected final void notifyUpdate() {
         for(ApiListener observer : getObservers()) observer.onUpdate(this);
     }
