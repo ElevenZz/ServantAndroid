@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 /**
  * the base class for all api adapters.
- * most of the logic is centralized here for more maintainability
+ * most of the adapter logic is centralized here for more maintainability
  * @param <BindingType> the layout binding type
  * @param <ApiElementType> actual api element this is the adapter for
  * @param <ApiChildType> the child type of the api element
@@ -35,15 +35,31 @@ public abstract class ApiAdapter<
     extends BindableItem<BindingType>
     implements ApiListener<ApiChildType>, ExpandableItem {
 
-    // the actual UI element
+    /**
+     * the actual UI element
+     */
     ExpandableGroup m_expandToggle;
-    // the activity
+
+    /**
+     * the main activity
+     */
     FragmentActivity m_context;
-    // the thing were holding
+
+    /**
+     * the api element this is wrapping
+     */
     ApiElementType m_element;
-    // map api element to adapter
+
+    /**
+     * map api element to adapter for fast and easy access
+     */
     HashMap<ApiChildType, ExpandableGroup> m_childs;
 
+    /**
+     * automatically attaches this instance as an observer for the underlying api element
+     * @param ctx a reference to the main activity for opening dialogs and accessing the UI thread
+     * @param element the api element to wrap
+     */
     ApiAdapter(FragmentActivity ctx, ApiElementType element) {
         m_childs  = new HashMap<>();
         m_context = ctx;
@@ -61,7 +77,7 @@ public abstract class ApiAdapter<
     protected abstract AdapterChildType instanciateChildAdapter(ApiChildType child);
 
     /**
-     * binds the expand icon and sets adds the animations
+     * binds the expand icon and adds the animations
      * @param icon icon view to bind
      */
     void bindExpandIcon(AppCompatImageView icon) {
@@ -74,7 +90,7 @@ public abstract class ApiAdapter<
     }
 
     /**
-     * set the icon to visible and sets the corresponding resource on it
+     * set the icon to visible and sets the expand or collapse image resource on it
      * @param icon the icon view
      */
     private void initializeIcon(AppCompatImageView icon) {
@@ -93,6 +109,11 @@ public abstract class ApiAdapter<
 
     public ExpandableGroup getGroup()   { return m_expandToggle; }
     public ApiElementType  getElement() { return m_element;      }
+
+    /**
+     * returns values of the childs map
+     * @return child adapters of this instance
+     */
     public Collection<ExpandableGroup> getChilds() { return m_childs.values(); }
 
     /**
@@ -108,8 +129,8 @@ public abstract class ApiAdapter<
     }
 
     /**
-     * implemented by the api elements listener
-     * called when a new child is added to the api element
+     * implemented from the api elements listener
+     * called when a new child is added to the underlying api element
      * @param item the item that was added
      */
     @Override public void onAddChild(ApiChildType item) {
@@ -124,8 +145,8 @@ public abstract class ApiAdapter<
     }
 
     /**
-     * implemented by the api elements listener
-     * called when a child is removed from the api element
+     * implemented from the api elements listener
+     * called when a child is removed from the underlying api element
      * @param item the item that was removed
      */
     @Override public void onRemoveChild(ApiChildType item) {
@@ -136,8 +157,8 @@ public abstract class ApiAdapter<
 
     /**
      * implemented by the api elements listener
-     * called when the attributes of a child have changed
-     * notifies the view of an update and update the local database cache
+     * called when an attribute of the underlying api element changed
+     * notifies the view of an update and updates the local database cache
      * @param item the item that was changed
      */
     @Override public void onUpdate(ApiElement item) { notifyChanged(); }

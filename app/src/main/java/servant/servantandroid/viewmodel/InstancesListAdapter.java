@@ -10,7 +10,6 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
@@ -19,14 +18,37 @@ import servant.servantandroid.R;
 import servant.servantandroid.internal.ServantInstance;
 import servant.servantandroid.viewmodel.persistence.DatabaseService;
 
+/**
+ * the drawer content displaying the saved instances
+ */
 public class InstancesListAdapter extends Section {
 
-    // BiMap would be cool here but i don't want more deps
+    /**
+     * mapping the vm adapters to the model instances
+     */
     private Map<InstanceAdapter, ServantInstance> m_instances;
+
+    /**
+     * the touch callback to implement swipe to delete functionality
+     */
     private TouchCallback m_touchCallback;
+
+    /**
+     * reference to the main activity
+     */
     private FragmentActivity m_context;
+
+    /**
+     * the currently selected module
+     */
     private MutableLiveData m_selectedModule;
 
+    /**
+     * loads the cached servant instances via DatabaseService
+     * implements the onSwiped callback to delete instances
+     * @param ctx reference to the main activity
+     * @param selectedModule selected module livedata
+     */
     public InstancesListAdapter(FragmentActivity ctx, MutableLiveData<ModuleAdapter> selectedModule) {
         m_instances = new HashMap<>();
         m_context = ctx;
@@ -50,6 +72,11 @@ public class InstancesListAdapter extends Section {
         };
     }
 
+    /**
+     * remove the instance from the UI and delete it from the local cache
+     * opens a dialog box asking you if you really want to delete the instance
+     * @param instance the instance to delete
+     */
     public void removeInstance(InstanceAdapter instance) {
         new AlertDialog.Builder(m_context)
             .setMessage(String.format(m_context.getString(R.string.remove_approval), instance.getName()))
@@ -66,6 +93,13 @@ public class InstancesListAdapter extends Section {
             .show();
     }
 
+    /**
+     * adds an instance to the local cache and then calls
+     * a local method to add the instance to the ui
+     * @param host the url of the remote server containing the port
+     * @param name the local display name of the new instance
+     * @throws MalformedURLException if the url is in an invalid format
+     */
     public void addInstance(String host, String name) throws MalformedURLException {
         for(InstanceAdapter instance : m_instances.keySet()) {
             if(instance.getName().equalsIgnoreCase(name))
@@ -83,11 +117,18 @@ public class InstancesListAdapter extends Section {
         DatabaseService.getInstance().insertServantInstance(instance);
     }
 
+    /**
+     * update all current instances in the local cache
+     */
     public void saveInstances() {
         for(ServantInstance inst : m_instances.values())
             DatabaseService.getInstance().updateServantInstance(inst);
     }
 
+    /**
+     * add the instance to the UI
+     * @param instance instance to add
+     */
     private void addInstance(ServantInstance instance) {
         InstanceAdapter adapter  = new InstanceAdapter(m_context, instance, m_selectedModule);
         ExpandableGroup group    = new ExpandableGroup(adapter);
@@ -96,5 +137,9 @@ public class InstancesListAdapter extends Section {
         add(group);
     }
 
+    /**
+     * get the touch callback used for swipe to delete functionality
+     * @return the touch callback
+     */
     public TouchCallback getTouchCallback() { return m_touchCallback; }
 }

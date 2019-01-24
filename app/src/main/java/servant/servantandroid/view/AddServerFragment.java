@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import servant.servantandroid.R;
 import servant.servantandroid.databinding.AddserverDialogBinding;
 
+/**
+ * dialog to add a new server
+ */
 public class AddServerFragment extends DialogFragment {
     /**
      * interface for allowing the communication between the main activity and the dialog
@@ -21,7 +24,11 @@ public class AddServerFragment extends DialogFragment {
         void onAddServerClicked(DialogFragment dialog);
     }
 
-    AddServerListener m_listener;
+    /**
+     * the observer for this dialog
+     * it gets notified when the user clicks the OK button
+     */
+    private AddServerListener m_listener;
 
     /**
      * automatically gets called by the creator of the dialog
@@ -37,8 +44,12 @@ public class AddServerFragment extends DialogFragment {
         }
     }
 
-    @Override @NonNull
-    public Dialog onCreateDialog(Bundle savedInstance) {
+    /**
+     * creating the actual dialog using the add server layout
+     * @param savedInstance if this was restored from memory
+     * @return the created dialog
+     */
+    @Override @NonNull public Dialog onCreateDialog(Bundle savedInstance) {
         AddserverDialogBinding binding = DataBindingUtil.inflate(
             LayoutInflater.from(getContext()),
             R.layout.addserver_dialog, null, false

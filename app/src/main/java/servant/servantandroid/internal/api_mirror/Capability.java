@@ -16,6 +16,9 @@ import servant.servantandroid.internal.Logger;
 import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
 import servant.servantandroid.internal.api_mirror.parameters.ParameterFactory;
 
+/**
+ * the class which sends the execution request to the server
+ */
 public class Capability extends ApiElement<BaseParameter> {
 
     Capability(JSONObject obj, ApiService service) { super(obj, service); }
@@ -73,7 +76,13 @@ public class Capability extends ApiElement<BaseParameter> {
         notifyUpdate();
     }
 
-    // construct parameter by type
+    /**
+     * determine which parameter class should be instantiated based on the type string
+     * and instantiate it
+     * @param json json representing element
+     * @return the specific parameter
+     * @throws JSONException if the json doesn't contain a "type" field
+     */
     @Override protected BaseParameter instanciateChild(JSONObject json) throws JSONException {
         return ParameterFactory.getInstance().constructParameter(
             json.getString("type"), json, m_api

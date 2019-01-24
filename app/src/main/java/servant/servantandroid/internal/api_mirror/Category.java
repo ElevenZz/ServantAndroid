@@ -5,6 +5,9 @@ import org.json.JSONObject;
 
 import servant.servantandroid.internal.ApiService;
 
+/**
+ * just a category for adding an additional display abstraction
+ */
 public class Category extends ApiElement<Capability> {
 
     Category(JSONObject obj, ApiService service) { super(obj, service); }

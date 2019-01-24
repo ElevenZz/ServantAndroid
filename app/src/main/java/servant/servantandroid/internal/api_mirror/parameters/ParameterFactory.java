@@ -15,7 +15,9 @@ import servant.servantandroid.internal.ApiService;
  * this is basically the preparation until i have time to do that
  */
 public class ParameterFactory {
-    // https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+    /**
+     * https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+     */
     private static class LazyHolder {
         private static final ParameterFactory instance = new ParameterFactory();
     }
@@ -25,12 +27,28 @@ public class ParameterFactory {
     }
 
     // Nahem says: "Don't do JavaScript Kids"
+    /**
+     * mapping the specific parameter class to a name
+     */
     private Map<String, Class<? extends BaseParameter>> m_parameterTypes = new HashMap<>();
 
+    /**
+     * get concrete parameter class by type name
+     * @param parameterName the name of parameter type
+     * @return corresponding parameter
+     */
     public Class<? extends BaseParameter> resolve(String parameterName) {
         return m_parameterTypes.get(parameterName);
     }
 
+    /**
+     * construct parameter given its type
+     * @param parameterName parameter type
+     * @param parameter json object representing the parameter
+     * @param service api service to pass to the param constructor
+     * @return parameter instance
+     * @throws IllegalArgumentException if the parameter does not exist
+     */
     public BaseParameter constructParameter(String parameterName, JSONObject parameter, ApiService service)
         throws IllegalArgumentException {
 
@@ -56,6 +74,9 @@ public class ParameterFactory {
         return instance;
     }
 
+    /**
+     * initializes the parameter hash map
+     */
     private ParameterFactory() {
         // register parameters
         m_parameterTypes.put("text", TextParameter.class);

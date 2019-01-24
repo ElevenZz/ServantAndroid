@@ -1,6 +1,5 @@
 package servant.servantandroid.view;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,16 +32,36 @@ import android.widget.EditText;
 
 import java.net.MalformedURLException;
 
+/**
+ * main and only activity
+ * implements add server listener to handle positive callbacks by the add server dialog
+ * implements on refresh listener to allow "swipe up to refresh" on the selected module
+ */
 public class StartActivity
     extends AppCompatActivity
     implements AddServerFragment.AddServerListener, SwipeRefreshLayout.OnRefreshListener {
 
+    /**
+     * adapter for the drawer content
+     */
     private InstancesListAdapter m_instances;
+
+    /**
+     * databinding for this activity
+     */
     private ActivityStartBinding m_binding;
-    // an observable holder getting updated when the user clicks on a module
-    // the observer in the main activity updates the content view with the module categories
+
+    /**
+     * an observable holder getting updated when the user clicks on a module
+     * the observer in the main activity updates the content view with the module categories
+     */
     private MutableLiveData<ModuleAdapter> m_selectedModule;
 
+    /**
+     * called when this activity is about to be created for displaying
+     * @param savedInstanceState if this activity is restored from memory
+     *                           ex. due to the user reentering the app
+     */
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -104,7 +123,7 @@ public class StartActivity
 
         // TODO: display currently selected module in toolbar
         m_selectedModule.observe(this, (module) ->
-            runOnUiThread(() -> categoriesAdapter.update(module.getCategories()))
+            runOnUiThread(() -> categoriesAdapter.update(module.getChilds()))
         );
 
         categoriesView.setAdapter(categoriesAdapter);
@@ -145,6 +164,7 @@ public class StartActivity
 
     /**
      * listener callback from the add server dialog
+     * called when the user click the dialog's ok button
      * @param dialog the dialog this was called from
      */
     @Override public void onAddServerClicked(DialogFragment dialog) {
@@ -172,6 +192,7 @@ public class StartActivity
 
     /**
      * gets called when android decides it wants to pause to activity
+     * saves all instances to the local cache
      */
     @Override protected void onPause() {
         super.onPause();
@@ -179,11 +200,15 @@ public class StartActivity
     }
 
     /**
-     * overrides OnRefreshListener. gets called when the user swipes upwards
+     * overrides OnRefreshListener, gets called when the user swipes upwards
+     * calls update on the selected module if it isn't null, starts the refresh animation
+     * and stops it again from the update callback
      */
     @Override public void onRefresh() {
-        if(m_selectedModule.getValue() != null) m_selectedModule.getValue()
-            .update(() -> m_binding.appbar.content.swipeLayout.setRefreshing(false));
-        m_instances.saveInstances();
+        if(m_selectedModule.getValue() != null)
+            m_selectedModule.getValue().update(() -> {
+                m_binding.appbar.content.swipeLayout.setRefreshing(false);
+                m_instances.saveInstances();
+            });
     }
 }

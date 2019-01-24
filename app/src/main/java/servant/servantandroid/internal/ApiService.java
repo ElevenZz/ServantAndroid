@@ -63,7 +63,10 @@ public class ApiService {
     public String getRemoteHost() { return m_remoteHost.getHost(); }
 }
 
-// https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+/**
+ * an http client singleton utilizing the "initialization on demand holder idiom"
+ * https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+ */
 class OkSingleton extends OkHttpClient {
     private static class LazyHolder {
         private static final OkSingleton instance = new OkSingleton();

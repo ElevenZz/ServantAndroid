@@ -13,6 +13,10 @@ import servant.servantandroid.internal.Logger;
 public class ExecuteAsync {
     private static ExecutorService m_pool;
 
+    /**
+     * execute a runnable function in the background using a thread pool
+     * @param runnable the runnable to execute
+     */
     public static void execute(Runnable runnable) {
         check();
         m_pool.execute(runnable);

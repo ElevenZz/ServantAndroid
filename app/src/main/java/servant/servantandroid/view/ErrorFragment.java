@@ -13,9 +13,18 @@ import android.view.LayoutInflater;
 import servant.servantandroid.R;
 import servant.servantandroid.databinding.ErrorDialogBinding;
 
+/**
+ * a dialog for displaying an error message
+ */
 public class ErrorFragment extends DialogFragment {
-    // constants for the argument names, just a safety measure
+    /**
+     * name of the error argument
+     */
     private static final String ERROR_ARG   = "error";
+
+    /**
+     * name of the details argument
+     */
     private static final String DETAILS_ARG = "details";
 
     /**
@@ -37,8 +46,13 @@ public class ErrorFragment extends DialogFragment {
         fragment.show(manager, null);
     }
 
-    @Override @NonNull
-    public Dialog onCreateDialog(Bundle savedInstance) {
+    /**
+     * creates the actual dialog from the dialog layout
+     * the error and details arguments can both be null in which case N/A is displayed instead
+     * @param savedInstance if this was restored from memory
+     * @return the created dialog
+     */
+    @Override @NonNull public Dialog onCreateDialog(Bundle savedInstance) {
         if(getArguments() == null) throw new IllegalArgumentException(
             "an error-dialog was opened without any arguments... lol"
         );

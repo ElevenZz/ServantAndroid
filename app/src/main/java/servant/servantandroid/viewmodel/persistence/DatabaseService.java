@@ -22,16 +22,31 @@ import servant.servantandroid.internal.api_mirror.parameters.BaseParameter;
 import servant.servantandroid.internal.api_mirror.parameters.ParameterFactory;
 import servant.servantandroid.util.ExecuteAsync;
 
-// singleton pattern like advised by android:
-// "Note: If your app runs in a single process, you should follow the singleton design pattern when instantiating an AppDatabase object"
+/**
+ * database server utilizing a singleton pattern as advised by android:
+ * "Note: If your app runs in a single process,
+ * you should follow the singleton design pattern when instantiating an AppDatabase object"
+ */
 public class DatabaseService {
+    /**
+     * singleton instance
+     */
     private static DatabaseService instance;
 
     public static DatabaseService getInstance() { return instance; }
+
+    /**
+     * initialize database singleton
+     * @param ctx application context from main activity
+     */
     public static void initialize(Context ctx)  { instance = new DatabaseService(ctx); }
 
     private LocalDatabase m_db;
 
+    /**
+     * construct new room database insntance
+     * @param ctx application context from main activity
+     */
     private DatabaseService(Context ctx) {
         m_db = Room.databaseBuilder(
             ctx,
@@ -40,6 +55,12 @@ public class DatabaseService {
         ).build();
     }
 
+    /**
+     * convert multiple servant instances to instance entities
+     * for local database storage by serializing them with Gson
+     * @param instances servant instances to convert
+     * @return instance entities
+     */
     private InstanceEntity[] instancesToEntities(ServantInstance... instances) {
         InstanceEntity[] entities = new InstanceEntity[instances.length];
 
@@ -55,16 +76,31 @@ public class DatabaseService {
         return entities;
     }
 
+    /**
+     * close the local database
+     */
     public void close() { m_db.close(); }
 
+    /**
+     * convert servant instances to instance entities and stores them
+     * @param instances instances to add
+     */
     public void insertServantInstance(ServantInstance... instances) {
         ExecuteAsync.execute(() -> m_db.instanceDao().insert(instancesToEntities(instances)));
     }
 
+    /**
+     * convert servant instances to instance entities and updates them
+     * @param instances instances to update
+     */
     public void updateServantInstance(ServantInstance... instances) {
         ExecuteAsync.execute(() -> m_db.instanceDao().update(instancesToEntities(instances)));
     }
 
+    /**
+     * convert servant instances to instance entities and deletes them
+     * @param instances instances to delete
+     */
     public void removeServantInstance(ServantInstance... instances) {
         ExecuteAsync.execute(() -> m_db.instanceDao().delete(instancesToEntities(instances)));
     }
