@@ -1,6 +1,7 @@
 package servant.servantandroid.viewmodel;
 
 import android.graphics.drawable.Animatable;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -24,7 +25,8 @@ public class CapabilityAdapter
 
     @Override
     public void bind(@NonNull CapabilityLayoutBinding viewBinding, int position) {
-        bindExpandIcon(viewBinding.iconExpand);
+        if(! m_childs.isEmpty()) bindExpandIcon(viewBinding.iconExpand);
+        else viewBinding.iconExpand.setVisibility(View.INVISIBLE);
         viewBinding.title.setText(m_element.getName());
         viewBinding.iconExecute.setImageResource(R.drawable.execute_animated);
         viewBinding.iconExecute.setOnClickListener((view) -> {
